@@ -1,0 +1,73 @@
+/*
+ * cmd_dec.h
+ *
+ *  Created on: Aug 8, 2023
+ *      Author: tj925438
+ */
+
+#ifndef CMD_DEC_H_
+#define CMD_DEC_H_
+
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
+#include <stdio.h>
+
+////#include "define_sys.h"
+#include "VCP_UART.h"
+
+#define CMD_DEC_NUM_VAL		480				/* maximum number of value parameters */
+#define LINE_BUFFER_LEN		4096            /* (CMD_DEC_NUM_VAL * 7 + 256) - max. input string length: values in hex plus some commands */
+
+#define CMD_DEC_OPT_SIGN	'-'				/* option starts with '-' */
+#define CMD_DEC_SEPARATOR	';'				/* different commands in single line */
+#define CMD_DEC_COMMENT		'#'				/* comment after command - rest of line ignored */
+
+typedef enum {
+	CMD_DEC_OK = 0,							/* all OK */
+	CMD_DEC_UNKNOWN,						/* command does not exist */
+	CMD_DEC_INVALID,						/* wrong command syntax */
+	CMD_DEC_ERROR,							/* error on command execution */
+	CMD_DEC_EMPTY,							/* empty command, no keyword, e.g. just ENTER */
+	CMD_DEC_OOMEM,							/* out of memory to get buffer from mempool */
+	CMD_DEC_INVPARAM,						/* invalid parameter, e.g. length too large */
+	CMD_DEC_TIMEOUT							/* time out on command */
+} ECMD_DEC_Status;
+
+typedef struct {
+	char *cmd;								/* command key word */
+	char *opt;								/* if option starting with '-' - the string afterwards */
+	char *str;								/* rest of line as string */
+	unsigned long cmdLen;			        /* character length of CMD keyword */
+	unsigned long  offset;		            /* end of command string, or next semicolon */
+	unsigned long  num;				        /* number of specified values */
+  unsigned long  ctl;				        /* break outer command interpreter loop, 'concur' seen */
+  unsigned long val[CMD_DEC_NUM_VAL];		/* index 0 can be an optVal */
+} TCMD_DEC_Results;
+
+typedef ECMD_DEC_Status (*TCmdFunc)(TCMD_DEC_Results *res, EResultOut out);
+
+typedef struct {
+	const char *cmd;						/* command key word */
+	const char *help;						/* help text */
+	const TCmdFunc func;				/* the command handler function */
+} TCMD_DEC_Command;
+
+
+#define UART_GetString    VCP_UART_getString
+
+void hex_dump(const unsigned char* ptr, int len, int mode, EResultOut out);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+ECMD_DEC_Status CMD_DEC_execute(char *cmd, EResultOut out);
+#ifdef __cplusplus
+}
+#endif
+
+void CMD_printPrompt(EResultOut out);
+int CMD_getSPIoption(char *str);
+const char * CMD_nextStr(const char *str);
+
+#endif /* CMD_DEC_H_ */
