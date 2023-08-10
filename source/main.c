@@ -27,6 +27,8 @@
 
 static char const *s_appName = "CMDtask";
 
+int USBH_Init(void);
+
 /*!
  * @brief Application task function.
  *
@@ -87,6 +89,8 @@ void main(void)
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
 
+    MEM_PoolInit();
+
     if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
                     s_appName,                                     /* task name for kernel awareness debugging */
                     APP_TASK_STACK_SIZE / sizeof(portSTACK_TYPE),  /* task stack size                          */
@@ -103,9 +107,9 @@ void main(void)
 #endif
     }
 
-    debug_log("starting RTOS...\r\n");
-    MEM_PoolInit();
+    USBH_Init();
 
+    debug_log("starting RTOS...\r\n");
     vTaskStartScheduler();
 
 #if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))

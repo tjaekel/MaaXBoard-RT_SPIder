@@ -13,6 +13,7 @@
 
 typedef enum {
 	UART_OUT,
+	DEBUG_OUT,
 	HTTPD_OUT,
 	HTTPD_OUT_ONLY,
 	SILENT,

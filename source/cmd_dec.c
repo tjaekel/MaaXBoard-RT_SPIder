@@ -25,8 +25,12 @@ ECMD_DEC_Status CMD_print(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_repeat(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_delay(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
+
+ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out);
 
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
@@ -69,12 +73,34 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"led <0..2> [0|1]",
 				.func = CMD_led
 		},
+		{
+				.cmd = (const char *)"fwreset",
+				.help = (const char *)"fwreset reboots FW",
+				.func = CMD_fwreset
+		},
 
+		//USB memory stick
+		{
+				.cmd = (const char *)"umdir",
+				.help = (const char *)"USB memory list directory [1:/dirname]",
+				.func = CMD_umdir
+		},
+		{
+				.cmd = (const char *)"umprint",
+				.help = (const char *)"USB memory print file <1:/filename>",
+				.func = CMD_umprint
+		},
+
+		//SPI
 		{
 				.cmd = (const char *)"rawspi",
 				.help = (const char *)"rawspi <byte ...>",
 				.func = CMD_rawspi
-		}
+		},
+
+		//Chip specific
+
+		//other expert, test commands
 };
 
 /**
@@ -603,6 +629,17 @@ ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out)
   return CMD_DEC_OK;
 }
 
+ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out) {
+  (void)res;
+  (void)out;
+
+  NVIC_SystemReset();     //CMSIS file used
+
+  return CMD_DEC_OK;
+}
+
+/* --------------------------------------------------------------------------- */
+
 unsigned char spiTx[CMD_DEC_NUM_VAL];
 unsigned char spiRx[CMD_DEC_NUM_VAL];
 
@@ -622,4 +659,26 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out)
   UART_Send((const char *)"\r\n", 2, out);
 
   return CMD_DEC_OK;
+}
+
+/* -------------------------------------------------------------------------- */
+
+extern int USBH_Available(void);
+extern int USBH_ListRootDirectory(char *f, EResultOut out);
+extern int USBH_PrintFile(char *f, EResultOut out);
+
+ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out)
+{
+	if (USBH_Available())
+		USBH_ListRootDirectory(res->str, out);
+
+	return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out)
+{
+	if (USBH_Available())
+		USBH_PrintFile(res->str, out);
+
+	return CMD_DEC_OK;
 }

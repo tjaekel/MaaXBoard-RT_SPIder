@@ -50,6 +50,7 @@ extern int DbgConsole_Printf(const char *fmt_s, ...);
 #define debug_log printf
 #elif defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 1U)
 #define debug_log DbgConsole_Printf
+#define usb_echo  DbgConsole_Printf
 #elif defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 2U)
 static inline int USB_DbgConsole_Disabled(void)
 {

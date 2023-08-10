@@ -18,6 +18,8 @@ web server, Python host access, TFTP, USB memory stick ...
   toggle the three LEDs on board on and off
 * "rawspi" command:
   fire a SPI transaction with a byte sequence
+* USB Memory Stick (with FAT32) and commands:
+  "umdir", "umprint"
 
 ## Testing SPI
 connect J1 pin 19 and pin 21, use command "rawspi" in order to
@@ -29,12 +31,20 @@ send a sequence of bytes.
   (e.g. SPI modes)
 * add Web Server:
   to access via Web Browser, from a Python script
-* add USB Memory Stick:
-  use as external script/file storage
 * add TFTP:
   transfer files to/from USB Memory Stick
 * add "Pico-C":
   my script engine to execute C-code scripts
 * optimization:
   for performance, memory usage and footprint
+
+## Remarks
+The Debug UART (LPUART1, via MCU-LINK header), prints some logs,
+esp. when a USB Memory Stick is plugged-in or removed.
+There is still a bit of code for the USB Memory Stick test, but it does
+not format the USB device anymore, neither it creates a new file.
+It should be safe to plug-in a FAT32 USB stick with existing files.
+
+You can plug-in and remove without a command to release the USB Memory Stick
+(watch the Debug UART).
 

@@ -128,10 +128,13 @@ void USB_OTG1_IRQHandler(void)
     USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
 }
 
+#if 0
+/* this is not needed for USB Device */
 void USB_OTG2_IRQHandler(void)
 {
     USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
 }
+#endif
 
 void USB_DeviceClockInit(void)
 {
@@ -648,24 +651,34 @@ void VCP_UART_putString(const char *s, EResultOut out)
 	uint32_t size = 0;
 	usb_status_t error = kStatus_USB_Error;
 
-	while (*s)
+	if (out == UART_OUT)
 	{
-		if (size >= sizeof(s_currSendBuf))
-			break;
-		s_currSendBuf[size++] = *s++;
+		while (*s)
+		{
+			if (size >= sizeof(s_currSendBuf))
+				break;
+			s_currSendBuf[size++] = *s++;
+		}
+
+		if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+		{
+			error = USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+			if (error != kStatus_USB_Success)
+			{
+				/* wait and try again:
+				 * this is also used in VCP_UART_getSring(), wenn calling too fast again the USB send - it will fail!
+				 */
+				OSA_TimeDelay(1);
+				USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+			}
+		}
+		return;
 	}
 
-	if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+	if (out == DEBUG_OUT)
 	{
-		error = USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
-		if (error != kStatus_USB_Success)
-		{
-			/* wait and try again:
-			 * this is also used in VCP_UART_getSring(), wenn calling too fast again the USB send - it will fail!
-			 */
-			OSA_TimeDelay(1);
-			USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
-		}
+		DbgConsole_Printf(s);
+		return;
 	}
 }
 
@@ -744,12 +757,6 @@ char *VCP_UART_getString(void)
                 if (s_currSendBuf[size - 1] == '\r') {
                 	s_currSendBuf[size] = '\n';
                 	size++;
-                }
-
-                if (s_currSendBuf[0] == '.') {
-                	//with . we send a string, for test
-                	strcpy((char *)s_currSendBuf, sWelcomeMessage);
-                	size = strlen(sWelcomeMessage);
                 }
 
                 /* handle BS */
