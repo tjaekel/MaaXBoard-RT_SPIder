@@ -18,6 +18,8 @@ web server, Python host access, TFTP, USB memory stick ...
   toggle the three LEDs on board on and off
 * "rawspi" command:
   fire a SPI transaction with a byte sequence
+* prepared: hve SPI bus with two SPI_CSx signals:
+  generate SPI_CSx in "SW mode" - works
 * USB Memory Stick (with FAT32) and commands:
   "umdir", "umprint"
 

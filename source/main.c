@@ -17,6 +17,8 @@
 
 #include "LED.h"
 #include "SPI.h"
+#include "GPIO.h"
+#include "TEMP.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
 #include "cmd_dec.h"
@@ -54,7 +56,6 @@ void APPTask(void *handle)
 {
     USB_DeviceApplicationInit();
 
-    LED_Init();
     SPI_setup();
 
 #if USB_DEVICE_CONFIG_USE_TASK
@@ -90,6 +91,9 @@ void main(void)
     BOARD_InitDebugConsole();
 
     MEM_PoolInit();
+    LED_Init();
+    GPIO_Init();
+    TEMP_Init();
 
     if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
                     s_appName,                                     /* task name for kernel awareness debugging */

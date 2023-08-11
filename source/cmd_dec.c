@@ -10,6 +10,8 @@
 
 #include "LED.h"
 #include "SPI.h"
+#include "GPIO.h"
+#include "TEMP.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
 #include "cmd_dec.h"
@@ -26,6 +28,9 @@ ECMD_DEC_Status CMD_repeat(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_delay(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out);
+
+ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
 
@@ -72,6 +77,11 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.cmd = (const char *)"led",
 				.help = (const char *)"led <0..2> [0|1]",
 				.func = CMD_led
+		},
+		{
+				.cmd = (const char *)"pgpio",
+				.help = (const char *)"set GPIO <num> [0|1]",
+				.func = CMD_pgpio
 		},
 		{
 				.cmd = (const char *)"fwreset",
@@ -523,12 +533,6 @@ ECMD_DEC_Status CMD_help(TCMD_DEC_Results *res, EResultOut out)
 	return CMD_DEC_OK;
 }
 
-ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out)
-{
-
-  return CMD_DEC_OK;
-}
-
 ECMD_DEC_Status CMD_syserr(TCMD_DEC_Results *res, EResultOut out)
 {
 
@@ -629,6 +633,15 @@ ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out)
   return CMD_DEC_OK;
 }
 
+ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out)
+{
+  (void)out;
+
+  GPIO_Set(res->val[0], res->val[1]);
+
+  return CMD_DEC_OK;
+}
+
 ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out) {
   (void)res;
   (void)out;
@@ -636,6 +649,17 @@ ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out) {
   NVIC_SystemReset();     //CMSIS file used
 
   return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)res;
+	int temp;
+
+	print_log(out, "MCU core clock  : %d [Hz]\r\n", SystemCoreClock);
+	temp = TEMP_Get();
+	print_log(out, "MCU temperature : %d.%d [C]\r\n", temp / 10, temp % 10);
+	return CMD_DEC_OK;
 }
 
 /* --------------------------------------------------------------------------- */

@@ -18,6 +18,8 @@
 #include "fsl_common.h"
 #include "task.h"
 
+void SPI_SW_CS(int num, int state);
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -30,7 +32,7 @@
 #define EXAMPLE_LPSPI_MASTER_DMA_RX_CHANNEL        	0U
 #define EXAMPLE_LPSPI_MASTER_DMA_TX_CHANNEL        	1U
 
-#define EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT     		(kLPSPI_Pcs0)
+#define EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT     		(kLPSPI_Pcs0)				//other PCS do not work!
 #define EXAMPLE_LPSPI_MASTER_PCS_FOR_TRANSFER 		(kLPSPI_MasterPcs0)
 
 #define LPSPI_MASTER_CLK_FREQ (CLOCK_GetFreqFromObs(CCM_OBS_LPSPI1_CLK_ROOT))
@@ -76,6 +78,8 @@ void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *hand
 #endif
     }
 
+    SPI_SW_CS(0, 1);
+    SPI_SW_CS(1, 1);
     isTransferCompleted = true;
 }
 
@@ -134,10 +138,14 @@ void SPI_setup(void)
     LPSPI_MasterTransferCreateHandleEDMA(EXAMPLE_LPSPI_MASTER_BASEADDR, &g_m_edma_handle, LPSPI_MasterUserCallback,
                                              NULL, &lpspiEdmaMasterRxRegToRxDataHandle,
                                              &lpspiEdmaMasterTxDataToTxRegHandle);
+
+    SPI_SW_CS(0, 1);
+    SPI_SW_CS(1, 1);
 }
 
 int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len)
 {
+	/* TODO: use a semaphore and avoid interrupting calls */
 	memcpy(masterTxData, tx, len);
 
     /*Start master transfer*/
@@ -148,6 +156,8 @@ int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len)
 
     isTransferCompleted = false;
     LPSPI_MasterTransferEDMA(EXAMPLE_LPSPI_MASTER_BASEADDR, &g_m_edma_handle, &masterXfer);
+    SPI_SW_CS(0, 0);
+    SPI_SW_CS(1, 0);
 
     /* Wait until transfer completed */
     while (!isTransferCompleted)

@@ -211,7 +211,7 @@ status_t LPSPI_MasterTransferEDMA(LPSPI_Type *base, lpspi_master_edma_handle_t *
 
     /* Disable module before configuration */
     LPSPI_Enable(base, false);
-    /* Check arguements */
+    /* Check arguments */
     if (!LPSPI_CheckTransferArgument(base, transfer, true))
     {
         return kStatus_InvalidArgument;

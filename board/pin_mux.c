@@ -372,6 +372,7 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+#ifdef SPI_NSS_HW
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_DISP_B2_15_LPSPI4_PCS0,      /* GPIO_DISP_B2_15 is configured as LPSPI4_PCS0 */
 	  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
@@ -381,6 +382,8 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+#endif
+
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_DISP_B2_14_LPSPI4_SOUT,      /* GPIO_DISP_B2_14 is configured as LPSPI4_SOUT */
 	  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
@@ -399,6 +402,34 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+  /* User GPIOs */
+  /* GPIO configuration of USER_GPIO on J1, pin22 */
+  gpio_pin_config_t USER_GPIO_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 0U,
+      .interruptMode = kGPIO_NoIntmode
+  };
+  /* Initialize GPIO functionality on IOMUXC_GPIO_AD_31_GPIO9_IO30 */
+  GPIO_PinInit(GPIO9, 30U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_AD_31_GPIO9_IO30,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
+      0U);
+
+#ifndef SPI_NSS_HW
+  //IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16 as SPI_CS0
+  GPIO_PinInit(GPIO11, 16U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
+      02U);
+#endif
+  /* add SPI_CS1 - as SW_NSS only possible: IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16 */
+  GPIO_PinInit(GPIO8, 16U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
+      02U);
 }
 
 
@@ -672,7 +703,6 @@ void BOARD_InitEnetPins(void) {
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
 }
-
 
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
