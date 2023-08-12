@@ -12,6 +12,7 @@
 #include "SPI.h"
 #include "GPIO.h"
 #include "TEMP.h"
+#include "HTTPD.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
 #include "cmd_dec.h"
@@ -29,13 +30,16 @@ ECMD_DEC_Status CMD_delay(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
 
+#ifdef WITH_USB_MEMORY
 ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out);
+#endif
 
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
@@ -88,7 +92,13 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"fwreset reboots FW",
 				.func = CMD_fwreset
 		},
+		{
+				.cmd = (const char *)"ipaddr",
+				.help = (const char *)"display MCU IP address",
+				.func = CMD_ipaddr
+		},
 
+#ifdef WITH_USB_MEMORY
 		//USB memory stick
 		{
 				.cmd = (const char *)"umdir",
@@ -100,6 +110,7 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"USB memory print file <1:/filename>",
 				.func = CMD_umprint
 		},
+#endif
 
 		//SPI
 		{
@@ -687,6 +698,7 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out)
 
 /* -------------------------------------------------------------------------- */
 
+#ifdef WITH_USB_MEMORY
 extern int USBH_Available(void);
 extern int USBH_ListRootDirectory(char *f, EResultOut out);
 extern int USBH_PrintFile(char *f, EResultOut out);
@@ -703,6 +715,15 @@ ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out)
 {
 	if (USBH_Available())
 		USBH_PrintFile(res->str, out);
+
+	return CMD_DEC_OK;
+}
+#endif
+
+ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)res;
+	print_log(out, "IP address: %s\r\n", HTTPD_GetIPAddress());
 
 	return CMD_DEC_OK;
 }

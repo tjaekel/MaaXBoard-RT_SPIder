@@ -8,6 +8,8 @@
 #ifndef VCP_UART_H_
 #define VCP_UART_H_
 
+#include <stdio.h>
+
 #define UART_LINE_LEN		128
 #define XPRINT_LEN			(80*128)			/* max. length print buffer/strings/lines */
 

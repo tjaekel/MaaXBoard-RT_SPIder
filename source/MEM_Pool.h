@@ -8,7 +8,7 @@
 #ifndef MEM_POOL_H_
 #define MEM_POOL_H_
 
-#define MEM_POOL_NUM_SEGMENTS	   8
+#define MEM_POOL_NUM_SEGMENTS	   2
 #define MEM_POOL_SEG_WORDS	  2048			        /* as unsigned long, 4x in bytes */
 #define MEM_POOL_TYPE         unsigned long     	/* the type of buffer, aligned for 32bit ! */
 #define MEM_POOL_SEG_BYTES    (MEM_POOL_SEG_WORDS * sizeof(MEM_POOL_TYPE))

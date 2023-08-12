@@ -19,6 +19,7 @@
 #include "SPI.h"
 #include "GPIO.h"
 #include "TEMP.h"
+#include "HTTPD.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
 #include "cmd_dec.h"
@@ -111,7 +112,11 @@ void main(void)
 #endif
     }
 
+    /* initialization with thread definitions */
+#ifdef WITH_USB_MEMORY
     USBH_Init();
+#endif
+    HTTPD_Init();
 
     debug_log("starting RTOS...\r\n");
     vTaskStartScheduler();

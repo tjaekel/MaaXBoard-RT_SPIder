@@ -22,6 +22,9 @@ web server, Python host access, TFTP, USB memory stick ...
   generate SPI_CSx in "SW mode" - works
 * USB Memory Stick (with FAT32) and commands:
   "umdir", "umprint"
+* Web Server:
+  but a conflict with USB Memory (if disabled: fine, ie enabled:
+  refresh page stops working after 4 times)
 
 ## Testing SPI
 connect J1 pin 19 and pin 21, use command "rawspi" in order to
@@ -33,6 +36,7 @@ send a sequence of bytes.
   (e.g. SPI modes)
 * add Web Server:
   to access via Web Browser, from a Python script
+  web page working but incomplete
 * add TFTP:
   transfer files to/from USB Memory Stick
 * add "Pico-C":
@@ -49,4 +53,9 @@ It should be safe to plug-in a FAT32 USB stick with existing files.
 
 You can plug-in and remove without a command to release the USB Memory Stick
 (watch the Debug UART).
+
+## Issues
+When USB Memory stick is enabled - it conflicts with HTTP server:
+after 4 times refresh - the HTTP server is dead,
+without USB Memory stick it is fine.
 
