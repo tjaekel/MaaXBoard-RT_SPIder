@@ -57,7 +57,7 @@ static void sendUSBEvent(void);
  * Variables
  ******************************************************************************/
 
-static const char sWelcomeMessage[] = "\r\n*** SPIder version 1.0 ***\r\n";
+static const char sWelcomeMessage[] = "\r\n*** SPIder version 2.0 " __DATE__ " ***\r\n";
 
 extern usb_device_endpoint_struct_t g_UsbDeviceCdcVcomDicEndpoints[];
 extern usb_device_class_struct_t g_UsbDeviceCdcVcomConfig;

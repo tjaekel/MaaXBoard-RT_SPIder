@@ -116,7 +116,9 @@ void main(void)
 #ifdef WITH_USB_MEMORY
     USBH_Init();
 #endif
+#ifdef WITH_HTTPD_SERVER
     HTTPD_Init();
+#endif
 
     debug_log("starting RTOS...\r\n");
     vTaskStartScheduler();

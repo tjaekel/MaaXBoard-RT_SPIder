@@ -2,7 +2,6 @@
 
 extern const HTTPSRV_FS_DIR_ENTRY httpsrv_fs_data[];
 
-#ifdef ORI
 static const unsigned char httpsrv_fs_webpage_auth_html[] = {
     /* webpage/auth.html */
     0x3c, 0x21, 0x44, 0x4f, 0x43, 0x54, 0x59, 0x50, 0x45, 0x20, 0x48, 0x54, 0x4d, 0x4c, 0x20, 0x53, 0x59, 0x53, 0x54,
@@ -311,11 +310,9 @@ static const unsigned char httpsrv_fs_webpage_httpsrv_css[] = {
     0x72, 0x67, 0x69, 0x6e, 0x3a, 0x20, 0x31, 0x70, 0x78, 0x3b, 0x0d, 0x0a, 0x09, 0x70, 0x61, 0x64, 0x64, 0x69, 0x6e,
     0x67, 0x3a, 0x20, 0x30, 0x70, 0x78, 0x3b, 0x0d, 0x0a, 0x09, 0x77, 0x69, 0x64, 0x74, 0x68, 0x3a, 0x20, 0x31, 0x39,
     0x37, 0x70, 0x78, 0x3b, 0x0d, 0x0a, 0x7d, 0x0d, 0x0a};
-#endif
 
 static const unsigned char httpsrv_fs_webpage_index_html[] = {
     /* webpage/index.html */
-#ifdef ORI
     0x3c, 0x21, 0x44, 0x4f, 0x43, 0x54, 0x59, 0x50, 0x45, 0x20, 0x48, 0x54, 0x4d, 0x4c, 0x20, 0x53, 0x59, 0x53, 0x54,
     0x45, 0x4d, 0x3e, 0x0d, 0x0a, 0x3c, 0x68, 0x74, 0x6d, 0x6c, 0x3e, 0x0d, 0x0a, 0x3c, 0x68, 0x65, 0x61, 0x64, 0x3e,
     0x0d, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x3c, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x3e, 0x4d, 0x43, 0x55, 0x58, 0x70, 0x72,
@@ -465,57 +462,8 @@ static const unsigned char httpsrv_fs_webpage_index_html[] = {
     0x20, 0x4e, 0x58, 0x50, 0x20, 0x53, 0x65, 0x6d, 0x69, 0x63, 0x6f, 0x6e, 0x64, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73,
     0x0d, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c, 0x2f, 0x64, 0x69, 0x76, 0x3e, 0x0d, 0x0a, 0x0d,
     0x0a, 0x20, 0x20, 0x20, 0x20, 0x3c, 0x2f, 0x64, 0x69, 0x76, 0x3e, 0x0d, 0x0a, 0x0d, 0x0a, 0x3c, 0x2f, 0x62, 0x6f,
-    0x64, 0x79, 0x3e, 0x0d, 0x0a, 0x3c, 0x2f, 0x68, 0x74, 0x6d, 0x6c, 0x3e, 0x09, 0x09, 0x0d, 0x0a
-#else
-"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\r\n\
-<html xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" xmlns=\"http://www.w3.org/TR/REC-html40\">\r\n\
-<head>\r\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\r\n\
-<link rel=\"icon\" href=\"data:,\">\r\n\
-<title>MaaxBoard SPIder</title>\r\n\
-<style>\r\n\
-.bg1 {background-color: rgb(180, 180, 180);}\r\n\
-.bg2 {background-color: rgb(200, 200, 200);}\r\n\
-.bg3 {font-family: Verdana; font-weight: bold; font-style: italic; background-color: rgb(230, 230, 230); text-align: center;}\r\n\
-.bg4 {font-family: Verdana; font-weight: bold; font-style: italic; text-align: center;}\r\n\
-</style>\r\n\
-</head>\r\n\
-<body lang=\"EN-US\" link=\"blue\" vlink=\"blue\" bgcolor=\"#336666\">\r\n\
-<table style=\"width: 860px; height: 30px;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">\r\n\
-<tbody>\r\n\
-<tr>\r\n\
-<td class=\"bg4\" style=\"background-color: rgb(40, 40, 255);\"><small><a href=\"/index.html\"><span style=\"color: white;\">Home Page</span></a></small></td>\r\n\
-<td class=\"bg4\" style=\"background-color: rgb(40, 40, 255);\"><small><a href=\"/index.html\"><span style=\"color: white;\">List of Tasks</span></a></small></td>\r\n\
-</tr>\r\n\
-<tr>\r\n\
-<td class=\"bg4\" style=\"background-color: rgb(60, 160, 255);\"><strong><a href=\"/index.html\" style=\"text-decoration:none;\"><span style=\"color: white;\">Soft reset</span></a></strong></td>\r\n\
-<td class=\"bg4\" style=\"background-color: rgb(200, 100, 255);\"><strong><a href=\"/index.html\" style=\"text-decoration:none;\"><span style=\"color: white;\">Hard reset</span></a></strong></td>\r\n\
-</tr>\r\n"
+    0x64, 0x79, 0x3e, 0x0d, 0x0a, 0x3c, 0x2f, 0x68, 0x74, 0x6d, 0x6c, 0x3e, 0x09, 0x09, 0x0d, 0x0a};
 
-"<tr class=\"bg2\">\r\n\
-<td colspan=\"2\">\r\n\
-<form action=\"/index.html\">\r\n\
-<input type=\"text\" name=\"CMD\" value=\"\" size=\"145\">\r\n\
-</form>\r\n\
-</td>\r\n\
-</tr>\r\n\
-<tr class=\"bg1\">\r\n\
-<td colspan=\"2\">\r\n\
-<form action=\"/index.html\">\r\n\
-<textarea name=\"CMD_RES\" rows=\"30\" cols=\"140\">\r\n"
-
-"</textarea>\r\n\
-</form>\r\n\
-</td>\r\n\
-</tr>\r\n\
-</tbody>\r\n\
-</table>\r\n\
-</body>\r\n\
-</html>\r\n"
-#endif
-};
-
-#ifdef ORI
 static const unsigned char httpsrv_fs_webpage_NXP_logo_png[] = {
     /* webpage/NXP_logo.png */
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00,
@@ -1468,22 +1416,18 @@ static const unsigned char httpsrv_fs_webpage_welcome_html[] = {
     0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2e, 0x0d, 0x0a, 0x20, 0x20, 0x20, 0x20,
     0x3c, 0x2f, 0x70, 0x3e, 0x0d, 0x0a, 0x3c, 0x2f, 0x62, 0x6f, 0x64, 0x79, 0x3e, 0x0d, 0x0a, 0x3c, 0x2f, 0x68, 0x74,
     0x6d, 0x6c, 0x3e};
-#endif
 
 const HTTPSRV_FS_DIR_ENTRY httpsrv_fs_data[] = {
-#ifdef ORI
     {"/auth.html", 0, (unsigned char *)httpsrv_fs_webpage_auth_html, sizeof(httpsrv_fs_webpage_auth_html)},
     {"/cgi.html", 0, (unsigned char *)httpsrv_fs_webpage_cgi_html, sizeof(httpsrv_fs_webpage_cgi_html)},
     {"/favicon.ico", 0, (unsigned char *)httpsrv_fs_webpage_favicon_ico, sizeof(httpsrv_fs_webpage_favicon_ico)},
     {"/httpsrv.css", 0, (unsigned char *)httpsrv_fs_webpage_httpsrv_css, sizeof(httpsrv_fs_webpage_httpsrv_css)},
-#endif
     {"/index.html", 0, (unsigned char *)httpsrv_fs_webpage_index_html, sizeof(httpsrv_fs_webpage_index_html)},
-#ifdef ORI
     {"/NXP_logo.png", 0, (unsigned char *)httpsrv_fs_webpage_NXP_logo_png, sizeof(httpsrv_fs_webpage_NXP_logo_png)},
     {"/poll.html", 0, (unsigned char *)httpsrv_fs_webpage_poll_html, sizeof(httpsrv_fs_webpage_poll_html)},
     {"/request.js", 0, (unsigned char *)httpsrv_fs_webpage_request_js, sizeof(httpsrv_fs_webpage_request_js)},
     {"/ssi.shtml", 0, (unsigned char *)httpsrv_fs_webpage_ssi_shtml, sizeof(httpsrv_fs_webpage_ssi_shtml)},
-    {"/websocket.html", 0, (unsigned char *)httpsrv_fs_webpage_websocket_html, sizeof(httpsrv_fs_webpage_websocket_html)},
+    {"/websocket.html", 0, (unsigned char *)httpsrv_fs_webpage_websocket_html,
+     sizeof(httpsrv_fs_webpage_websocket_html)},
     {"/welcome.html", 0, (unsigned char *)httpsrv_fs_webpage_welcome_html, sizeof(httpsrv_fs_webpage_welcome_html)},
-#endif
     {0, 0, 0, 0}};

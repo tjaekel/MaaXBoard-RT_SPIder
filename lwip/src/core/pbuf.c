@@ -441,11 +441,8 @@ pbuf_realloc(struct pbuf *p, u16_t new_len)
 #endif /* LWIP_SUPPORT_CUSTOM_PBUF */
      ) {
     /* reallocate and adjust the length of the pbuf that will be split */
-    struct pbuf *r = (struct pbuf *)mem_trim(q, (mem_size_t)(((u8_t *)q->payload - (u8_t *)q) + rem_len));
-    LWIP_ASSERT("mem_trim returned r == NULL", r != NULL);
-    /* help to detect faulty overridden implementation of mem_trim */
-    LWIP_ASSERT("mem_trim returned r != q", r == q);
-    LWIP_UNUSED_ARG(r);
+    q = (struct pbuf *)mem_trim(q, (mem_size_t)(((u8_t *)q->payload - (u8_t *)q) + rem_len));
+    LWIP_ASSERT("mem_trim returned q == NULL", q != NULL);
   }
   /* adjust length fields for new last pbuf */
   q->len = rem_len;
@@ -680,7 +677,7 @@ pbuf_free_header(struct pbuf *q, u16_t size)
       struct pbuf *f = p;
       free_left = (u16_t)(free_left - p->len);
       p = p->next;
-      f->next = NULL;
+      f->next = 0;
       pbuf_free(f);
     } else {
       pbuf_remove_header(p, free_left);

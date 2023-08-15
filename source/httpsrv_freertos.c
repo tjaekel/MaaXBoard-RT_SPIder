@@ -20,7 +20,7 @@
 #ifndef __REDLIB__
 #include <inttypes.h>
 #else
-#define PRIu32 "u"
+////#define PRIu32 "u"
 #endif
 
 #include "lwip/netif.h"
@@ -35,6 +35,8 @@
 
 #include "httpsrv.h"
 #include "lwip/apps/mdns.h"
+
+#include "VCP_UART.h"
 
 /*******************************************************************************
  * Definitions
@@ -63,7 +65,8 @@ static bool cgi_get_varval(char *var_str, char *var_name, char *var_val, uint32_
  * Variables
  ******************************************************************************/
 
-static char s_mdns_hostname[65] = "";
+static char s_mdns_hostname[65]  = "";
+static char s_mdns_hostname2[65] = "";
 
 /* FS data.*/
 extern const HTTPSRV_FS_DIR_ENTRY httpsrv_fs_data[];
@@ -426,16 +429,21 @@ static void http_srv_txt(struct mdns_service *service, void *txt_userdata)
 /*!
  * @brief Configure and enable MDNS service.
  */
-void http_server_enable_mdns(struct netif *netif, const char *mdns_hostname)
+void http_server_enable_mdns(struct netif *netif, const char *mdns_hostname, struct netif *netif2, const char *mdns_hostname2)
 {
     LOCK_TCPIP_CORE();
     mdns_resp_init();
     mdns_resp_add_netif(netif, mdns_hostname);
     mdns_resp_add_service(netif, mdns_hostname, "_http", DNSSD_PROTO_TCP, 80, http_srv_txt, NULL);
+    mdns_resp_add_netif(netif2, mdns_hostname2);
+    mdns_resp_add_service(netif2, mdns_hostname2, "_http", DNSSD_PROTO_TCP, 80, http_srv_txt, NULL);
     UNLOCK_TCPIP_CORE();
 
     (void)strncpy(s_mdns_hostname, mdns_hostname, sizeof(s_mdns_hostname) - 1);
     s_mdns_hostname[sizeof(s_mdns_hostname) - 1] = '\0'; // Make sure string will be always terminated.
+
+    (void)strncpy(s_mdns_hostname2, mdns_hostname2, sizeof(s_mdns_hostname2) - 1);
+    s_mdns_hostname[sizeof(s_mdns_hostname2) - 1] = '\0'; // Make sure string will be always terminated.
 }
 
 /*!
@@ -468,25 +476,23 @@ void http_server_socket_init(void)
     }
 }
 
-static char sIPAddress[20];
 /*!
  * @brief Prints IP configuration.
  */
-void http_server_print_ip_cfg(struct netif *netif)
+void http_server_print_ip_cfg(EResultOut out, struct netif *netif, int num)
 {
-    PRINTF("\r\n************************************************\r\n");
-    PRINTF(" HTTP Server example\r\n");
-    PRINTF("************************************************\r\n");
-    PRINTF(" IPv4 Address     : %s\r\n", ip4addr_ntoa(netif_ip4_addr(netif)));
-    PRINTF(" IPv4 Subnet mask : %s\r\n", ip4addr_ntoa(netif_ip4_netmask(netif)));
-    PRINTF(" IPv4 Gateway     : %s\r\n", ip4addr_ntoa(netif_ip4_gw(netif)));
-    PRINTF(" mDNS hostname    : %s\r\n", s_mdns_hostname);
-    PRINTF("************************************************\r\n");
-
-    strncpy(sIPAddress, ip4addr_ntoa(netif_ip4_addr(netif)), 20);
-}
-
-char *HTTPD_GetIPAddress(void)
-{
-	return sIPAddress;
+    ////PRINTF("\r\n************************************************\r\n");
+    ////PRINTF(" HTTP Server: %d\r\n", num);
+	print_log(out, "HTTP Server: %d\r\n", num);
+    ////PRINTF("************************************************\r\n");
+    ////PRINTF(" IPv4 Address     : %s\r\n", ip4addr_ntoa(netif_ip4_addr(netif)));
+	print_log(out, " IPv4 Address : %s\r\n", ip4addr_ntoa(netif_ip4_addr(netif)));
+    /////PRINTF(" IPv4 Subnet mask : %s\r\n", ip4addr_ntoa(netif_ip4_netmask(netif)));
+    ////PRINTF(" IPv4 Gateway     : %s\r\n", ip4addr_ntoa(netif_ip4_gw(netif)));
+    ////PRINTF(" mDNS hostname    : %s\r\n", s_mdns_hostname);
+	if ( ! num)
+		print_log(out, " mDNS hostname: %s\r\n", s_mdns_hostname);
+	else
+		print_log(out, " mDNS hostname: %s\r\n", s_mdns_hostname2);
+    ////PRINTF("************************************************\r\n");
 }

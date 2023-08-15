@@ -44,7 +44,7 @@
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
 #define configTICK_RATE_HZ                      ((TickType_t)1000)
 #define configMAX_PRIORITIES                    18
-#define configMINIMAL_STACK_SIZE                ((unsigned short)90)
+#define configMINIMAL_STACK_SIZE                ((unsigned short)256)
 #define configMAX_TASK_NAME_LEN                 20
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -71,6 +71,7 @@
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
 /*#define configTOTAL_HEAP_SIZE                   0  not used by heap_3.c allocator */
 
+/* if configFRTOS_MEMORY_SCHEME == 4 - we need this */
 #if defined(USB_STACK_FREERTOS_HEAP_SIZE) && (USB_STACK_FREERTOS_HEAP_SIZE > 0)
 #define configTOTAL_HEAP_SIZE ((size_t)(USB_STACK_FREERTOS_HEAP_SIZE))
 #else

@@ -8,7 +8,9 @@
 #ifndef HTTPD_H_
 #define HTTPD_H_
 
+#include "VCP_UART.h"
+
 int HTTPD_Init(void);
-char *HTTPD_GetIPAddress(void);
+char *HTTPD_GetIPAddress(EResultOut out);
 
 #endif /* HTTPD_H_ */

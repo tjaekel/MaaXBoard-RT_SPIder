@@ -36,10 +36,8 @@ ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
 
-#ifdef WITH_USB_MEMORY
 ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out);
-#endif
 
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
@@ -98,7 +96,6 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.func = CMD_ipaddr
 		},
 
-#ifdef WITH_USB_MEMORY
 		//USB memory stick
 		{
 				.cmd = (const char *)"umdir",
@@ -110,7 +107,6 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"USB memory print file <1:/filename>",
 				.func = CMD_umprint
 		},
-#endif
 
 		//SPI
 		{
@@ -698,7 +694,6 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out)
 
 /* -------------------------------------------------------------------------- */
 
-#ifdef WITH_USB_MEMORY
 extern int USBH_Available(void);
 extern int USBH_ListRootDirectory(char *f, EResultOut out);
 extern int USBH_PrintFile(char *f, EResultOut out);
@@ -718,12 +713,13 @@ ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out)
 
 	return CMD_DEC_OK;
 }
-#endif
 
 ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 {
 	(void)res;
-	print_log(out, "IP address: %s\r\n", HTTPD_GetIPAddress());
+#ifdef WITH_HTTPD_SERVER
+	HTTPD_GetIPAddress(out);
+#endif
 
 	return CMD_DEC_OK;
 }

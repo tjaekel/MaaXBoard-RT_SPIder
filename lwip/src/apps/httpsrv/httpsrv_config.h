@@ -55,7 +55,7 @@
 
 /* Default sessions count */
 #ifndef HTTPSRV_CFG_DEFAULT_SES_CNT
-#define HTTPSRV_CFG_DEFAULT_SES_CNT (2)					//was: 2
+#define HTTPSRV_CFG_DEFAULT_SES_CNT (2)
 #endif
 
 /* Session buffer size */
@@ -83,7 +83,7 @@
 
 /* Session keep-alive timeout in milliseconds */
 #ifndef HTTPSRV_CFG_KEEPALIVE_TIMEOUT
-#define HTTPSRV_CFG_KEEPALIVE_TIMEOUT (200)					//was 200
+#define HTTPSRV_CFG_KEEPALIVE_TIMEOUT (200)
 #endif
 
 /* Session timeout in milliseconds */

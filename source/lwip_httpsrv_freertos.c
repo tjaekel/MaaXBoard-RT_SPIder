@@ -63,7 +63,7 @@
 #define configIP_ADDR1 168
 #endif
 #ifndef configIP_ADDR2
-#define configIP_ADDR2 0
+#define configIP_ADDR2 1
 #endif
 #ifndef configIP_ADDR3
 #define configIP_ADDR3 102
@@ -91,7 +91,7 @@
 #define configGW_ADDR1 168
 #endif
 #ifndef configGW_ADDR2
-#define configGW_ADDR2 0
+#define configGW_ADDR2 1
 #endif
 #ifndef configGW_ADDR3
 #define configGW_ADDR3 1
@@ -270,49 +270,6 @@ static void main_task(void *arg)
     http_server_socket_init();
 
     vTaskDelete(NULL);
-}
-
-/*!
- * @brief Main function.
- */
-int HTTPD_Init(void)
-{
-    gpio_pin_config_t gpio_config = {kGPIO_DigitalOutput, 0, kGPIO_NoIntmode};
-
-    BOARD_InitModuleClock();
-    IOMUXC_SelectENETClock();
-
-#if BOARD_NETWORK_USE_100M_ENET_PORT
-    BOARD_InitEnetPins();
-    GPIO_PinInit(GPIO12, 12, &gpio_config);
-    GPIO_WritePinOutput(GPIO12, 12, 0);
-    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-    GPIO_WritePinOutput(GPIO12, 12, 1);
-    SDK_DelayAtLeastUs(6, CLOCK_GetFreq(kCLOCK_CpuClk));
-#else
-    BOARD_InitEnet1GPins();
-    GPIO_PinInit(GPIO11, 14, &gpio_config);
-    /* For a complete PHY reset of RTL8211FDI-CG, this pin must be asserted low for at least 10ms. And
-     * wait for a further 30ms(for internal circuits settling time) before accessing the PHY register */
-    GPIO_WritePinOutput(GPIO11, 14, 0);
-    SDK_DelayAtLeastUs(10000, CLOCK_GetFreq(kCLOCK_CpuClk));
-    GPIO_WritePinOutput(GPIO11, 14, 1);
-    SDK_DelayAtLeastUs(30000, CLOCK_GetFreq(kCLOCK_CpuClk));
-
-    EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
-    EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
-#endif
-
-    MDIO_Init();
-    g_phy_resource.read  = MDIO_Read;
-    g_phy_resource.write = MDIO_Write;
-
-    /* create server task in RTOS */
-    if (xTaskCreate(main_task, "main", HTTPD_STACKSIZE, NULL, HTTPD_PRIORITY, NULL) != pdPASS)
-    {
-        PRINTF("main(): Task creation failed.", 0);
-        __BKPT(0);
-    }
 }
 
 #endif // LWIP_SOCKET

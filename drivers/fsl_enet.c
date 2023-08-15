@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015 - 2016, Freescale Semiconductor, Inc.
- * Copyright 2016-2022 NXP
+ * Copyright 2016-2021 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -44,9 +44,6 @@ enum
 /*! @brief Pointers to enet clocks for each instance. */
 #if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
 const clock_ip_name_t s_enetClock[] = ENET_CLOCKS;
-#if defined(FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE) && FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE
-const clock_ip_name_t s_enetExtraClock[] = ENET_EXTRA_CLOCKS;
-#endif
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 
 /*! @brief Pointers to enet transmit IRQ number for each instance. */
@@ -332,11 +329,6 @@ status_t ENET_Init(ENET_Type *base,
 
     /* Ungate ENET clock. */
     (void)CLOCK_EnableClock(s_enetClock[instance]);
-
-#if defined(FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE) && FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE
-    /* Ungate ENET extra clock. */
-    (void)CLOCK_EnableClock(s_enetExtraClock[instance]);
-#endif
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
     /* Reset ENET module. */
     ENET_Reset(base);
@@ -382,11 +374,6 @@ void ENET_Deinit(ENET_Type *base)
 #if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
     /* Disables the clock source. */
     (void)CLOCK_DisableClock(s_enetClock[ENET_GetInstance(base)]);
-
-#if defined(FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE) && FSL_FEATURE_ENET_HAS_EXTRA_CLOCK_GATE
-    /* Disables ENET extra clock. */
-    (void)CLOCK_DisableClock(s_enetExtraClock[ENET_GetInstance(base)]);
-#endif
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 }
 
@@ -679,11 +666,11 @@ static void ENET_SetMacController(ENET_Type *base,
 
 /* Initializes the ring 0. */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-    base->TDSR = MEMORY_ConvertMemoryMapAddress((uintptr_t)bufferConfig->txBdStartAddrAlign, kMEMORY_Local2DMA);
-    base->RDSR = MEMORY_ConvertMemoryMapAddress((uintptr_t)bufferConfig->rxBdStartAddrAlign, kMEMORY_Local2DMA);
+    base->TDSR = MEMORY_ConvertMemoryMapAddress((uint32_t)bufferConfig->txBdStartAddrAlign, kMEMORY_Local2DMA);
+    base->RDSR = MEMORY_ConvertMemoryMapAddress((uint32_t)bufferConfig->rxBdStartAddrAlign, kMEMORY_Local2DMA);
 #else
-    base->TDSR = (uint32_t)(uintptr_t)bufferConfig->txBdStartAddrAlign;
-    base->RDSR = (uint32_t)(uintptr_t)bufferConfig->rxBdStartAddrAlign;
+    base->TDSR = (uint32_t)bufferConfig->txBdStartAddrAlign;
+    base->RDSR = (uint32_t)bufferConfig->rxBdStartAddrAlign;
 #endif
     base->MRBR = (uint32_t)bufferConfig->rxBuffSizeAlign;
 
@@ -697,11 +684,11 @@ static void ENET_SetMacController(ENET_Type *base,
             /* Initializes the ring 1. */
             buffCfg++;
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            base->TDSR1 = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->txBdStartAddrAlign, kMEMORY_Local2DMA);
-            base->RDSR1 = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->rxBdStartAddrAlign, kMEMORY_Local2DMA);
+            base->TDSR1 = MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->txBdStartAddrAlign, kMEMORY_Local2DMA);
+            base->RDSR1 = MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->rxBdStartAddrAlign, kMEMORY_Local2DMA);
 #else
-            base->TDSR1 = (uint32_t)(uintptr_t)buffCfg->txBdStartAddrAlign;
-            base->RDSR1 = (uint32_t)(uintptr_t)buffCfg->rxBdStartAddrAlign;
+            base->TDSR1 = (uint32_t)buffCfg->txBdStartAddrAlign;
+            base->RDSR1 = (uint32_t)buffCfg->rxBdStartAddrAlign;
 #endif
             base->MRBR1 = (uint32_t)buffCfg->rxBuffSizeAlign;
             /* Enable the DMAC for ring 1 and with no rx classification set. */
@@ -712,11 +699,11 @@ static void ENET_SetMacController(ENET_Type *base,
             /* Initializes the ring 2. */
             buffCfg++;
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            base->TDSR2 = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->txBdStartAddrAlign, kMEMORY_Local2DMA);
-            base->RDSR2 = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->rxBdStartAddrAlign, kMEMORY_Local2DMA);
+            base->TDSR2 = MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->txBdStartAddrAlign, kMEMORY_Local2DMA);
+            base->RDSR2 = MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->rxBdStartAddrAlign, kMEMORY_Local2DMA);
 #else
-            base->TDSR2 = (uint32_t)(uintptr_t)buffCfg->txBdStartAddrAlign;
-            base->RDSR2 = (uint32_t)(uintptr_t)buffCfg->rxBdStartAddrAlign;
+            base->TDSR2 = (uint32_t)buffCfg->txBdStartAddrAlign;
+            base->RDSR2 = (uint32_t)buffCfg->rxBdStartAddrAlign;
 #endif
             base->MRBR2 = (uint32_t)buffCfg->rxBuffSizeAlign;
             /* Enable the DMAC for ring 2 and with no rx classification set. */
@@ -743,13 +730,12 @@ static void ENET_SetMacController(ENET_Type *base,
 
 /* Enables Ethernet interrupt, enables the interrupt coalsecing if it is required. */
 #if defined(FSL_FEATURE_ENET_HAS_INTERRUPT_COALESCE) && FSL_FEATURE_ENET_HAS_INTERRUPT_COALESCE
-    uint8_t queue = 0;
-
     if (NULL != config->intCoalesceCfg)
     {
         uint32_t intMask = (ENET_EIMR_TXB_MASK | ENET_EIMR_RXB_MASK);
 
 #if FSL_FEATURE_ENET_QUEUE > 1
+        uint8_t queue = 0;
         if (FSL_FEATURE_ENET_INSTANCE_QUEUEn(base) > 1)
         {
             intMask |= ENET_EIMR_TXB2_MASK | ENET_EIMR_RXB2_MASK | ENET_EIMR_TXB1_MASK | ENET_EIMR_RXB1_MASK;
@@ -759,7 +745,8 @@ static void ENET_SetMacController(ENET_Type *base,
         /* Clear all buffer interrupts. */
         base->EIMR &= ~intMask;
 
-        /* Set the interrupt coalescence. */
+/* Set the interrupt coalescence. */
+#if FSL_FEATURE_ENET_QUEUE > 1
         for (queue = 0; queue < (uint8_t)FSL_FEATURE_ENET_INSTANCE_QUEUEn(base); queue++)
         {
             base->TXIC[queue] = ENET_TXIC_ICFT(config->intCoalesceCfg->txCoalesceFrameCount[queue]) |
@@ -769,6 +756,12 @@ static void ENET_SetMacController(ENET_Type *base,
                                 config->intCoalesceCfg->rxCoalesceTimeCount[queue] | ENET_RXIC_ICCS_MASK |
                                 ENET_RXIC_ICEN_MASK;
         }
+#else
+        base->TXIC = ENET_TXIC_ICFT(config->intCoalesceCfg->txCoalesceFrameCount[0]) |
+                     config->intCoalesceCfg->txCoalesceTimeCount[0] | ENET_TXIC_ICCS_MASK | ENET_TXIC_ICEN_MASK;
+        base->RXIC = ENET_RXIC_ICFT(config->intCoalesceCfg->rxCoalesceFrameCount[0]) |
+                     config->intCoalesceCfg->rxCoalesceTimeCount[0] | ENET_RXIC_ICCS_MASK | ENET_RXIC_ICEN_MASK;
+#endif /* FSL_FEATURE_ENET_QUEUE > 1 */
     }
 #endif /* FSL_FEATURE_ENET_HAS_INTERRUPT_COALESCE */
     ENET_EnableInterrupts(base, config->interrupt);
@@ -789,12 +782,12 @@ static void ENET_SetTxBufferDescriptors(enet_handle_t *handle,
     assert(config != NULL);
     assert(bufferConfig != NULL);
 
-    const enet_buffer_config_t *buffCfg = bufferConfig;
-    uintptr_t txBuffer                  = 0;
-    uint32_t txBuffSizeAlign;
-    uint16_t txBdNumber;
+    /* Default single ring is supported. */
     uint8_t ringNum;
     uint16_t count;
+    uint32_t txBuffSizeAlign;
+    uint8_t *txBuffer                   = NULL;
+    const enet_buffer_config_t *buffCfg = bufferConfig;
 
     /* Check the input parameters. */
     for (ringNum = 0; ringNum < config->ringNum; ringNum++)
@@ -803,31 +796,30 @@ static void ENET_SetTxBufferDescriptors(enet_handle_t *handle,
         {
             volatile enet_tx_bd_struct_t *curBuffDescrip = buffCfg->txBdStartAddrAlign;
             txBuffSizeAlign                              = buffCfg->txBuffSizeAlign;
-            txBdNumber                                   = buffCfg->txBdNumber;
 
             if (buffCfg->txBufferAlign != NULL)
             {
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                txBuffer = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->txBufferAlign, kMEMORY_Local2DMA);
+                txBuffer =
+                    (uint8_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->txBufferAlign, kMEMORY_Local2DMA);
 #else
-                txBuffer = (uintptr_t)buffCfg->txBufferAlign;
+                txBuffer = buffCfg->txBufferAlign;
 #endif
-                assert((uint64_t)txBuffer + (uint64_t)txBdNumber * txBuffSizeAlign - 1U <= UINT32_MAX);
             }
 
-            for (count = 0; count < txBdNumber; count++)
+            for (count = 0; count < buffCfg->txBdNumber; count++)
             {
                 if (buffCfg->txBufferAlign != NULL)
                 {
                     /* Set data buffer address. */
-                    curBuffDescrip->buffer = (uint32_t)(txBuffer + count * txBuffSizeAlign);
+                    curBuffDescrip->buffer = (uint8_t *)((uint32_t)&txBuffer[count * txBuffSizeAlign]);
                 }
                 /* Initializes data length. */
                 curBuffDescrip->length = 0;
                 /* Sets the crc. */
                 curBuffDescrip->control = ENET_BUFFDESCRIPTOR_TX_TRANMITCRC_MASK;
                 /* Sets the last buffer descriptor with the wrap flag. */
-                if (count == (txBdNumber - 1U))
+                if (count == (buffCfg->txBdNumber - 1U))
                 {
                     curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_TX_WRAP_MASK;
                 }
@@ -855,13 +847,12 @@ static void ENET_SetRxBufferDescriptors(enet_handle_t *handle,
     assert(config != NULL);
     assert(bufferConfig != NULL);
 
-    const enet_buffer_config_t *buffCfg = bufferConfig;
-    uint16_t rxBuffSizeAlign;
-    uint16_t rxBdNumber;
-    uintptr_t rxBuffer;
+    /* Default single ring is supported. */
     uint8_t ringNum;
     uint16_t count;
-
+    uint16_t rxBuffSizeAlign;
+    uint8_t *rxBuffer;
+    const enet_buffer_config_t *buffCfg = bufferConfig;
 #ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
     uint32_t mask = ((uint32_t)kENET_RxFrameInterrupt | (uint32_t)kENET_RxBufferInterrupt);
 #endif /* ENET_ENHANCEDBUFFERDESCRIPTOR_MODE */
@@ -891,35 +882,33 @@ static void ENET_SetRxBufferDescriptors(enet_handle_t *handle,
         {
             volatile enet_rx_bd_struct_t *curBuffDescrip = buffCfg->rxBdStartAddrAlign;
             rxBuffSizeAlign                              = buffCfg->rxBuffSizeAlign;
-            rxBdNumber                                   = buffCfg->rxBdNumber;
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            rxBuffer = MEMORY_ConvertMemoryMapAddress((uintptr_t)buffCfg->rxBufferAlign, kMEMORY_Local2DMA);
+            rxBuffer = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)buffCfg->rxBufferAlign, kMEMORY_Local2DMA);
 #else
-            rxBuffer = (uintptr_t)buffCfg->rxBufferAlign;
+            rxBuffer = buffCfg->rxBufferAlign;
 #endif
-            assert((uint64_t)rxBuffer + (uint64_t)rxBdNumber * rxBuffSizeAlign - 1U <= UINT32_MAX);
 
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (buffCfg->rxMaintainEnable)
             {
                 /* Invalidate rx buffers before DMA transfer data into them. */
-                DCACHE_InvalidateByRange(rxBuffer, ((uint32_t)rxBdNumber * rxBuffSizeAlign));
+                DCACHE_InvalidateByRange((uint32_t)rxBuffer, ((uint32_t)buffCfg->rxBdNumber * rxBuffSizeAlign));
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 
-            for (count = 0; count < rxBdNumber; count++)
+            for (count = 0; count < buffCfg->rxBdNumber; count++)
             {
                 /* Set data buffer and the length. */
                 curBuffDescrip->length = 0;
                 if (config->rxBuffAlloc == NULL)
                 {
-                    curBuffDescrip->buffer = (uint32_t)(rxBuffer + (uintptr_t)count * rxBuffSizeAlign);
+                    curBuffDescrip->buffer = (uint8_t *)((uint32_t)&rxBuffer[count * rxBuffSizeAlign]);
                     /* Initializes the buffer descriptors with empty bit. */
                     curBuffDescrip->control = ENET_BUFFDESCRIPTOR_RX_EMPTY_MASK;
                 }
 
                 /* Sets the last buffer descriptor with the wrap flag. */
-                if (count == (rxBdNumber - 1U))
+                if (count == (buffCfg->rxBdNumber - 1U))
                 {
                     curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
                 }
@@ -950,11 +939,11 @@ static status_t ENET_RxBufferAllocAll(ENET_Type *base, enet_handle_t *handle)
 {
     assert(handle->rxBuffAlloc != NULL);
 
-    volatile enet_rx_bd_struct_t *curBuffDescrip;
     enet_rx_bd_ring_t *rxBdRing;
-    uintptr_t buffer;
-    uint16_t ringId;
+    volatile enet_rx_bd_struct_t *curBuffDescrip;
     uint16_t index;
+    void *buffer;
+    uint16_t ringId;
 
     /* Allocate memory for all empty buffers in buffer descriptor */
     for (ringId = 0; ringId < handle->ringNum; ringId++)
@@ -967,25 +956,25 @@ static status_t ENET_RxBufferAllocAll(ENET_Type *base, enet_handle_t *handle)
 
         do
         {
-            buffer = (uintptr_t)(uint8_t *)handle->rxBuffAlloc(base, handle->userData, ringId);
-            if (buffer == 0U)
+            buffer = handle->rxBuffAlloc(base, handle->userData, ringId);
+            if (buffer == NULL)
             {
                 ENET_RxBufferFreeAll(base, handle);
                 return kStatus_ENET_InitMemoryFail;
             }
-            assert((uint64_t)buffer + handle->rxBuffSizeAlign[ringId] - 1U <= UINT32_MAX);
 
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (handle->rxMaintainEnable[ringId])
             {
                 /* Invalidate cache in case any unfinished cache operation occurs. */
-                DCACHE_InvalidateByRange(buffer, handle->rxBuffSizeAlign[ringId]);
+                DCACHE_InvalidateByRange((uint32_t)(uint32_t *)buffer, handle->rxBuffSizeAlign[ringId]);
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            buffer = MEMORY_ConvertMemoryMapAddress(buffer, kMEMORY_Local2DMA);
+            buffer =
+                (void *)(uint32_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)(uint32_t *)buffer, kMEMORY_Local2DMA);
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-            curBuffDescrip->buffer = (uint32_t)buffer;
+            curBuffDescrip->buffer = (uint8_t *)(uint32_t *)buffer;
             curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_RX_EMPTY_MASK;
 
             /* Increase the buffer descriptor, if it's the last one, increase to first one of the ring. */
@@ -1006,7 +995,7 @@ static void ENET_RxBufferFreeAll(ENET_Type *base, enet_handle_t *handle)
     uint16_t index;
     enet_rx_bd_ring_t *rxBdRing;
     volatile enet_rx_bd_struct_t *curBuffDescrip;
-    uintptr_t buffer;
+    void *buffer;
     uint16_t ringId;
 
     for (ringId = 0; ringId < handle->ringNum; ringId++)
@@ -1020,15 +1009,16 @@ static void ENET_RxBufferFreeAll(ENET_Type *base, enet_handle_t *handle)
         /* Free memory for all buffers in buffer descriptor */
         do
         {
-            if (curBuffDescrip->buffer != 0U)
+            if (curBuffDescrip->buffer != NULL)
             {
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                buffer = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+                buffer = (void *)(uint32_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer,
+                                                                            kMEMORY_DMA2Local);
 #else
                 buffer = curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-                handle->rxBuffFree(base, (void *)(uint8_t *)buffer, handle->userData, ringId);
-                curBuffDescrip->buffer = 0;
+                handle->rxBuffFree(base, buffer, handle->userData, ringId);
+                curBuffDescrip->buffer = NULL;
                 /* Clears status. */
                 curBuffDescrip->control &= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
             }
@@ -1267,178 +1257,145 @@ void ENET_SetSMI(ENET_Type *base, uint32_t srcClock_Hz, bool isPreambleDisabled)
     base->MSCR = mscr;
 }
 
-static status_t ENET_MDIOWaitTransferOver(ENET_Type *base)
+/*!
+ * brief Starts an SMI write command.
+ *
+ * Used for standard IEEE802.3 MDIO Clause 22 format.
+ *
+ * param base  ENET peripheral base address.
+ * param phyAddr The PHY address.
+ * param phyReg The PHY register. Range from 0 ~ 31.
+ * param operation The write operation.
+ * param data The data written to PHY.
+ */
+void ENET_StartSMIWrite(ENET_Type *base, uint32_t phyAddr, uint32_t phyReg, enet_mii_write_t operation, uint32_t data)
 {
-    status_t result = kStatus_Success;
-#ifdef ENET_MDIO_TIMEOUT_COUNT
-    uint32_t counter;
-#endif
+    uint32_t mmfr = 0;
 
-    /* Wait for MDIO access to complete. */
-#ifdef ENET_MDIO_TIMEOUT_COUNT
-    for (counter = ENET_MDIO_TIMEOUT_COUNT; counter > 0U; counter--)
-    {
-        if (ENET_EIR_MII_MASK == (ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK))
-        {
-            break;
-        }
-    }
-    /* Check for timeout. */
-    if (0U == counter)
-    {
-        result = kStatus_Timeout;
-    }
-#else
-    while (ENET_EIR_MII_MASK != (ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK))
-    {
-    }
-#endif
-    return result;
+    /* Build MII write command. */
+    mmfr = ENET_MMFR_ST(1U) | ENET_MMFR_OP(operation) | ENET_MMFR_PA(phyAddr) | ENET_MMFR_RA(phyReg) |
+           ENET_MMFR_TA(2U) | (data & 0xFFFFU);
+    base->MMFR = mmfr;
 }
 
 /*!
- * @brief MDIO write with IEEE802.3 Clause 22 format.
+ * brief Starts an SMI (Serial Management Interface) read command.
  *
- * @param base  ENET peripheral base address.
- * @param phyAddr  The PHY address.
- * @param regAddr  The PHY register. Range from 0 ~ 31.
- * @param data  The data written to PHY.
- * @return kStatus_Success  MDIO access succeeds.
- * @return kStatus_Timeout  MDIO access timeout.
- */
-status_t ENET_MDIOWrite(ENET_Type *base, uint8_t phyAddr, uint8_t regAddr, uint16_t data)
-{
-    status_t result = kStatus_Success;
-
-    /* Clear the MDIO access complete event. */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-
-    /* Starts MDIO write command. */
-    ENET_StartSMIWrite(base, phyAddr, regAddr, kENET_MiiWriteValidFrame, data);
-
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
-
-    /* Clear the MDIO access complete event. */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-
-    return result;
-}
-
-/*!
- * @brief MDIO read with IEEE802.3 Clause 22 format.
+ * Used for standard IEEE802.3 MDIO Clause 22 format.
  *
- * @param base  ENET peripheral base address.
- * @param phyAddr  The PHY address.
- * @param regAddr  The PHY register. Range from 0 ~ 31.
- * @param pData  The data read from PHY.
- * @return kStatus_Success  MDIO access succeeds.
- * @return kStatus_Timeout  MDIO access timeout.
+ * param base  ENET peripheral base address.
+ * param phyAddr The PHY address.
+ * param phyReg The PHY register. Range from 0 ~ 31.
+ * param operation The read operation.
  */
-status_t ENET_MDIORead(ENET_Type *base, uint8_t phyAddr, uint8_t regAddr, uint16_t *pData)
+void ENET_StartSMIRead(ENET_Type *base, uint32_t phyAddr, uint32_t phyReg, enet_mii_read_t operation)
 {
-    assert(pData != NULL);
+    uint32_t mmfr = 0;
 
-    status_t result = kStatus_Success;
-
-    /* Clear the MDIO access complete event. */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-
-    /* Starts a MDIO read command operation. */
-    ENET_StartSMIRead(base, phyAddr, regAddr, kENET_MiiReadValidFrame);
-
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
-
-    /* Get received data. */
-    *pData = (uint16_t)ENET_ReadSMIData(base);
-
-    /* Clear the MDIO access complete event. */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-
-    return result;
+    /* Build MII read command. */
+    mmfr = ENET_MMFR_ST(1U) | ENET_MMFR_OP(operation) | ENET_MMFR_PA(phyAddr) | ENET_MMFR_RA(phyReg) | ENET_MMFR_TA(2U);
+    base->MMFR = mmfr;
 }
 
 #if defined(FSL_FEATURE_ENET_HAS_EXTEND_MDIO) && FSL_FEATURE_ENET_HAS_EXTEND_MDIO
 /*!
- * @brief MDIO write with IEEE802.3 Clause 45 format.
+ * brief Starts the extended IEEE802.3 Clause 45 MDIO format SMI write register command.
  *
- * @param base  ENET peripheral base address.
- * @param portAddr  The MDIO port address(PHY address).
- * @param devAddr  The device address.
- * @param regAddr  The PHY register address.
- * @param data  The data written to PHY.
- * @return kStatus_Success  MDIO access succeeds.
- * @return kStatus_Timeout  MDIO access timeout.
+ * param base  ENET peripheral base address.
+ * param phyAddr The PHY address.
+ * param phyReg The PHY register. For MDIO IEEE802.3 Clause 45,
+ *        the phyReg is a 21-bits combination of the devaddr (5 bits device address)
+ *        and the regAddr (16 bits phy register): phyReg = (devaddr << 16) | regAddr.
  */
-status_t ENET_MDIOC45Write(ENET_Type *base, uint8_t portAddr, uint8_t devAddr, uint16_t regAddr, uint16_t data)
+void ENET_StartExtC45SMIWriteReg(ENET_Type *base, uint32_t phyAddr, uint32_t phyReg)
 {
-    status_t result = kStatus_Success;
+    uint32_t mmfr = 0;
 
-    /* Write the register address */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-    ENET_StartExtC45SMIWriteReg(base, portAddr, devAddr, regAddr);
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+    /* Parse the address from the input register. */
+    uint16_t devAddr = (uint16_t)((phyReg >> 16U) & 0x1FU);
+    uint16_t regAddr = (uint16_t)(phyReg & 0xFFFFU);
 
-    /* Write data to the specified register address */
-    ENET_StartExtC45SMIWriteData(base, portAddr, devAddr, data);
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-
-    return result;
+    /* Address write. */
+    mmfr = ENET_MMFR_ST(0) | ENET_MMFR_OP(kENET_MiiAddrWrite_C45) | ENET_MMFR_PA(phyAddr) | ENET_MMFR_RA(devAddr) |
+           ENET_MMFR_TA(2) | ENET_MMFR_DATA(regAddr);
+    base->MMFR = mmfr;
 }
+
 /*!
- * @brief MDIO read with IEEE802.3 Clause 45 format.
+ * brief Starts the extended IEEE802.3 Clause 45 MDIO format SMI write data command.
  *
- * @param base  ENET peripheral base address.
- * @param portAddr  The MDIO port address(PHY address).
- * @param devAddr  The device address.
- * @param regAddr  The PHY register address.
- * @param pData  The data read from PHY.
- * @return kStatus_Success  MDIO access succeeds.
- * @return kStatus_Timeout  MDIO access timeout.
+ * After writing MMFR register, we need to check whether the transmission is over.
+ * This is an example for whole precedure of clause 45 MDIO write.
+ * code
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ *       ENET_StartExtC45SMIWriteReg(base, phyAddr, phyReg);
+ *       while ((ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK) == 0U)
+ *       {
+ *       }
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ *       ENET_StartExtC45SMIWriteData(base, phyAddr, phyReg, data);
+ *       while ((ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK) == 0U)
+ *       {
+ *       }
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ * endcode
+ * param base  ENET peripheral base address.
+ * param phyAddr The PHY address.
+ * param phyReg The PHY register. For MDIO IEEE802.3 Clause 45,
+ *        the phyReg is a 21-bits combination of the devaddr (5 bits device address)
+ *        and the regAddr (16 bits phy register): phyReg = (devaddr << 16) | regAddr.
+ * param data The data written to PHY.
  */
-status_t ENET_MDIOC45Read(ENET_Type *base, uint8_t portAddr, uint8_t devAddr, uint16_t regAddr, uint16_t *pData)
+void ENET_StartExtC45SMIWriteData(ENET_Type *base, uint32_t phyAddr, uint32_t phyReg, uint32_t data)
 {
-    assert(pData != NULL);
+    uint32_t mmfr = 0;
 
-    status_t result = kStatus_Success;
+    /* Parse the address from the input register. */
+    uint16_t devAddr = (uint16_t)((phyReg >> 16U) & 0x1FU);
 
-    /* Write the register address */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-    ENET_StartExtC45SMIWriteReg(base, portAddr, devAddr, regAddr);
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
+    /* Build MII write command. */
+    mmfr = ENET_MMFR_ST(0) | ENET_MMFR_OP(kENET_MiiWriteFrame_C45) | ENET_MMFR_PA(phyAddr) | ENET_MMFR_RA(devAddr) |
+           ENET_MMFR_TA(2) | ENET_MMFR_DATA(data);
+    base->MMFR = mmfr;
+}
 
-    /* Read data from the specified register address */
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-    ENET_StartExtC45SMIReadData(base, portAddr, devAddr);
-    result = ENET_MDIOWaitTransferOver(base);
-    if (result != kStatus_Success)
-    {
-        return result;
-    }
-    ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
-    *pData = (uint16_t)ENET_ReadSMIData(base);
-    return result;
+/*!
+ * brief Starts the extended IEEE802.3 Clause 45 MDIO format SMI read data command.
+ *
+ * After writing MMFR register, we need to check whether the transmission is over.
+ * This is an example for whole precedure of clause 45 MDIO read.
+ * code
+ *       uint32_t data;
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ *       ENET_StartExtC45SMIWriteReg(base, phyAddr, phyReg);
+ *       while ((ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK) == 0U)
+ *       {
+ *       }
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ *       ENET_StartExtC45SMIReadData(base, phyAddr, phyReg);
+ *       while ((ENET_GetInterruptStatus(base) & ENET_EIR_MII_MASK) == 0U)
+ *       {
+ *       }
+ *       ENET_ClearInterruptStatus(base, ENET_EIR_MII_MASK);
+ *       data = ENET_ReadSMIData(base);
+ * endcode
+ * param base  ENET peripheral base address.
+ * param phyAddr The PHY address.
+ * param phyReg The PHY register. For MDIO IEEE802.3 Clause 45,
+ *        the phyReg is a 21-bits combination of the devaddr (5 bits device address)
+ *        and the regAddr (16 bits phy register): phyReg = (devaddr << 16) | regAddr.
+ */
+void ENET_StartExtC45SMIReadData(ENET_Type *base, uint32_t phyAddr, uint32_t phyReg)
+{
+    uint32_t mmfr = 0;
+
+    /* Parse the address from the input register. */
+    uint16_t devAddr = (uint16_t)((phyReg >> 16U) & 0x1FU);
+
+    /* Build MII read command. */
+    mmfr = ENET_MMFR_ST(0) | ENET_MMFR_OP(kENET_MiiReadFrame_C45) | ENET_MMFR_PA(phyAddr) | ENET_MMFR_RA(devAddr) |
+           ENET_MMFR_TA(2);
+    base->MMFR = mmfr;
 }
 #endif /* FSL_FEATURE_ENET_HAS_EXTEND_MDIO */
 
@@ -1728,8 +1685,8 @@ status_t ENET_ReadFrame(
     volatile enet_rx_bd_struct_t *curBuffDescrip = rxBdRing->rxBdBase + rxBdRing->rxGenIdx;
     uint16_t index                               = rxBdRing->rxGenIdx;
     status_t result                              = kStatus_Success;
-    uintptr_t address;
-    uintptr_t dest;
+    uint32_t address;
+    uint32_t dest;
 
     /* For data-NULL input, only update the buffer descriptor. */
     if (data == NULL)
@@ -1756,9 +1713,9 @@ status_t ENET_ReadFrame(
         {
 /* A frame on one buffer or several receive buffers are both considered. */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            address = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+            address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer, kMEMORY_DMA2Local);
 #else
-            address = curBuffDescrip->buffer;
+            address = (uint32_t)curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (handle->rxMaintainEnable[ringId])
@@ -1768,7 +1725,7 @@ status_t ENET_ReadFrame(
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 
-            dest = (uintptr_t)data + offset;
+            dest = (uint32_t)data + offset;
             /* The last buffer descriptor of a frame. */
             if (0U != (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_RX_LAST_MASK))
             {
@@ -1778,7 +1735,7 @@ status_t ENET_ReadFrame(
                 {
                     /* Copy the frame to user's buffer without FCS. */
                     len = curBuffDescrip->length - offset;
-                    (void)memcpy((void *)(uint8_t *)dest, (void *)(uint8_t *)address, len);
+                    (void)memcpy((void *)(uint32_t *)dest, (void *)(uint32_t *)address, len);
 #ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
                     /* Get the timestamp if the ts isn't NULL. */
                     if (ts != NULL)
@@ -1807,7 +1764,7 @@ status_t ENET_ReadFrame(
                     result = kStatus_ENET_RxFrameFail;
                     break;
                 }
-                (void)memcpy((void *)(uint8_t *)dest, (void *)(uint8_t *)address, handle->rxBuffSizeAlign[ringId]);
+                (void)memcpy((void *)(uint32_t *)dest, (void *)(uint32_t *)address, handle->rxBuffSizeAlign[ringId]);
                 offset += handle->rxBuffSizeAlign[ringId];
 
                 /* Updates the receive buffer descriptors. */
@@ -1882,9 +1839,9 @@ status_t ENET_SendFrame(ENET_Type *base,
     enet_frame_info_t *txDirty        = NULL;
     uint32_t len                      = 0;
     uint32_t sizeleft                 = 0;
-    uintptr_t address;
+    uint32_t address;
     status_t result = kStatus_Success;
-    uintptr_t src;
+    uint32_t src;
     uint32_t configVal;
     bool isReturn = false;
     uint32_t primask;
@@ -1914,11 +1871,11 @@ status_t ENET_SendFrame(ENET_Type *base,
             {
                 /* Copy data to the buffer for uDMA transfer. */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                address = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+                address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer, kMEMORY_DMA2Local);
 #else
-                address = curBuffDescrip->buffer;
+                address = (uint32_t)curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-                (void)memcpy((void *)(uint8_t *)address, (const void *)data, length);
+                (void)memcpy((void *)(uint32_t *)address, (const void *)(uint32_t *)(uint32_t)data, length);
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
                 if (handle->txMaintainEnable[ringId])
                 {
@@ -1982,11 +1939,11 @@ status_t ENET_SendFrame(ENET_Type *base,
                     /* Update the size left to be transmit. */
                     sizeleft = length - len;
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                    address = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+                    address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer, kMEMORY_DMA2Local);
 #else
-                    address = curBuffDescrip->buffer;
+                    address = (uint32_t)curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-                    src = (uintptr_t)data + len;
+                    src = (uint32_t)data + len;
 
                     /* Increase the current software index of BD */
                     txBdRing->txGenIdx = ENET_IncreaseIndex(txBdRing->txGenIdx, txBdRing->txRingLen);
@@ -1994,7 +1951,7 @@ status_t ENET_SendFrame(ENET_Type *base,
                     if (sizeleft > handle->txBuffSizeAlign[ringId])
                     {
                         /* Data copy. */
-                        (void)memcpy((void *)(uint8_t *)address, (void *)(uint8_t *)src,
+                        (void)memcpy((void *)(uint32_t *)address, (void *)(uint32_t *)src,
                                      handle->txBuffSizeAlign[ringId]);
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
                         if (handle->txMaintainEnable[ringId])
@@ -2024,7 +1981,7 @@ status_t ENET_SendFrame(ENET_Type *base,
                     }
                     else
                     {
-                        (void)memcpy((void *)(uint8_t *)address, (void *)(uint8_t *)src, sizeleft);
+                        (void)memcpy((void *)(uint32_t *)address, (void *)(uint32_t *)src, sizeleft);
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
                         if (handle->txMaintainEnable[ringId])
                         {
@@ -2193,7 +2150,7 @@ status_t ENET_GetRxBuffer(ENET_Type *base,
 
     enet_rx_bd_ring_t *rxBdRing                  = &handle->rxBdRing[ringId];
     volatile enet_rx_bd_struct_t *curBuffDescrip = rxBdRing->rxBdBase + rxBdRing->rxGenIdx;
-    uintptr_t address;
+    uint32_t address;
 
     /* Check if current rx BD is under usage by certain application */
     /* Buffer owner flag, 1: owned by application, 0: owned by driver */
@@ -2208,9 +2165,9 @@ status_t ENET_GetRxBuffer(ENET_Type *base,
 
 /* A frame on one buffer or several receive buffers are both considered. */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-    address = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+    address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer, kMEMORY_DMA2Local);
 #else
-    address = curBuffDescrip->buffer;
+    address = (uint32_t)curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
     if (handle->rxMaintainEnable[ringId])
@@ -2220,7 +2177,7 @@ status_t ENET_GetRxBuffer(ENET_Type *base,
     }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 
-    *buffer = (void *)(uint8_t *)address;
+    *buffer = (void *)(uint32_t *)address;
     *length = curBuffDescrip->length;
 
     /* The last buffer descriptor of a frame. */
@@ -2255,20 +2212,20 @@ void ENET_ReleaseRxBuffer(ENET_Type *base, enet_handle_t *handle, void *buffer, 
     assert(ringId < (uint8_t)FSL_FEATURE_ENET_QUEUE);
 
     enet_rx_bd_ring_t *rxBdRing           = &handle->rxBdRing[ringId];
-    enet_rx_bd_struct_t *ownBuffDescrip   = (enet_rx_bd_struct_t *)rxBdRing->rxBdBase;
-    enet_rx_bd_struct_t *blockBuffDescrip = (enet_rx_bd_struct_t *)rxBdRing->rxBdBase + rxBdRing->rxGenIdx;
+    enet_rx_bd_struct_t *ownBuffDescrip   = (enet_rx_bd_struct_t *)(uint32_t)rxBdRing->rxBdBase;
+    enet_rx_bd_struct_t *blockBuffDescrip = (enet_rx_bd_struct_t *)(uint32_t)rxBdRing->rxBdBase + rxBdRing->rxGenIdx;
     enet_rx_bd_struct_t tempBuffDescrip;
     uint16_t index   = rxBdRing->rxGenIdx;
     bool isReleaseBd = false;
 
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-    buffer = (void *)(uint32_t *)MEMORY_ConvertMemoryMapAddress((uintptr_t)(uint8_t *)buffer, kMEMORY_Local2DMA);
+    buffer = (void *)(uint32_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)(uint32_t *)buffer, kMEMORY_Local2DMA);
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 
     do
     {
         /* Find the BD for releasing, do nothing if it's not owned by application. */
-        if (buffer == (void *)(uint8_t *)ownBuffDescrip->buffer)
+        if (buffer == ownBuffDescrip->buffer)
         {
             if (0U != (ownBuffDescrip->control & ENET_BUFFDESCRIPTOR_RX_SOFTOWNER1_MASK))
             {
@@ -2424,13 +2381,13 @@ status_t ENET_GetRxFrame(ENET_Type *base, enet_handle_t *handle, enet_rx_frame_s
     status_t result                              = kStatus_Success;
     enet_rx_bd_ring_t *rxBdRing                  = &handle->rxBdRing[ringId];
     volatile enet_rx_bd_struct_t *curBuffDescrip = rxBdRing->rxBdBase + rxBdRing->rxGenIdx;
+    void *newBuff                                = NULL;
     bool isLastBuff                              = false;
-    uintptr_t newBuff                            = 0;
     uint16_t buffLen                             = 0;
     enet_buffer_struct_t *rxBuffer;
-    uintptr_t address;
-    uintptr_t buffer;
     uint16_t index;
+    uint32_t address;
+    void *buffer;
 
     /* Check the current buffer descriptor's empty flag. If empty means there is no frame received. */
     if (0U != (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_RX_EMPTY_MASK))
@@ -2501,16 +2458,15 @@ status_t ENET_GetRxFrame(ENET_Type *base, enet_handle_t *handle, enet_rx_frame_s
     index          = 0;
     do
     {
-        newBuff = (uintptr_t)(uint8_t *)handle->rxBuffAlloc(base, handle->userData, ringId);
-        if (newBuff != 0U)
+        newBuff = handle->rxBuffAlloc(base, handle->userData, ringId);
+        if (newBuff != NULL)
         {
-            assert((uint64_t)newBuff + handle->rxBuffSizeAlign[ringId] - 1U <= UINT32_MAX);
             rxBuffer = &rxFrame->rxBuffArray[index];
 
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            address = MEMORY_ConvertMemoryMapAddress(curBuffDescrip->buffer, kMEMORY_DMA2Local);
+            address = MEMORY_ConvertMemoryMapAddress((uint32_t)curBuffDescrip->buffer, kMEMORY_DMA2Local);
 #else
-            address = curBuffDescrip->buffer;
+            address = (uint32_t)curBuffDescrip->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (handle->rxMaintainEnable[ringId])
@@ -2519,7 +2475,7 @@ status_t ENET_GetRxFrame(ENET_Type *base, enet_handle_t *handle, enet_rx_frame_s
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 
-            rxBuffer->buffer = (void *)(uint8_t *)address;
+            rxBuffer->buffer = (void *)(uint32_t *)address;
 
             /* The last buffer descriptor of a frame. */
             if (0U != (curBuffDescrip->control & ENET_BUFFDESCRIPTOR_RX_LAST_MASK))
@@ -2550,18 +2506,19 @@ status_t ENET_GetRxFrame(ENET_Type *base, enet_handle_t *handle, enet_rx_frame_s
             /* Give new buffer from application to BD */
 
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-            buffer = MEMORY_ConvertMemoryMapAddress(newBuff, kMEMORY_Local2DMA);
+            buffer =
+                (void *)(uint32_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)(uint32_t *)newBuff, kMEMORY_Local2DMA);
 #else
             buffer  = newBuff;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (handle->rxMaintainEnable[ringId])
             {
-                DCACHE_InvalidateByRange(buffer, handle->rxBuffSizeAlign[ringId]);
+                DCACHE_InvalidateByRange((uint32_t)buffer, handle->rxBuffSizeAlign[ringId]);
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 
-            curBuffDescrip->buffer = (uint32_t)buffer;
+            curBuffDescrip->buffer = buffer;
 
             /* Clears status including the owner flag. */
             curBuffDescrip->control &= ENET_BUFFDESCRIPTOR_RX_WRAP_MASK;
@@ -2683,7 +2640,7 @@ status_t ENET_StartTxFrame(ENET_Type *base, enet_handle_t *handle, enet_tx_frame
     uint16_t index                    = 0;
     uint32_t configVal;
     uint32_t primask;
-    uintptr_t buffer;
+    void *buffer;
 
     /* Calculate frame length and Tx data buffer number. */
     do
@@ -2733,24 +2690,23 @@ status_t ENET_StartTxFrame(ENET_Type *base, enet_handle_t *handle, enet_tx_frame
         do
         {
             assert(txBuff->buffer != NULL);
-            assert((uint64_t)(uintptr_t)(uint8_t *)txBuff->buffer + txBuff->length - 1U <= UINT32_MAX);
 
 #if defined(FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL) && FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL
             if (handle->txMaintainEnable[ringId])
             {
-                DCACHE_CleanByRange((uintptr_t)(uint8_t *)txBuff->buffer, txBuff->length);
+                DCACHE_CleanByRange((uint32_t)txBuff->buffer, txBuff->length);
             }
 #endif /* FSL_SDK_ENABLE_DRIVER_CACHE_CONTROL */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
             /* Map loacl memory address to DMA for special platform. */
-            buffer = MEMORY_ConvertMemoryMapAddress((uintptr_t)(uint8_t *)txBuff->buffer, kMEMORY_Local2DMA);
+            buffer = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)txBuff->buffer, kMEMORY_Local2DMA);
 #else
-            buffer  = (uintptr_t)(uint8_t *)txBuff->buffer;
+            buffer  = txBuff->buffer;
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 
             /* Set data buffer and length. */
             curBuffDescrip         = txBdRing->txBdBase + txBdRing->txGenIdx;
-            curBuffDescrip->buffer = (uint32_t)buffer;
+            curBuffDescrip->buffer = (uint8_t *)(uint32_t *)buffer;
             curBuffDescrip->length = txBuff->length;
 
             /* Increase txBuffer array address and the buffer descriptor address. */
@@ -2819,7 +2775,7 @@ status_t ENET_SendFrameZeroCopy(ENET_Type *base,
     uint32_t len                      = 0;
     uint32_t sizeleft                 = 0;
     status_t result                   = kStatus_Success;
-    uintptr_t data_temp;
+    uint8_t *data_temp;
     uint32_t configVal;
     bool isReturn = false;
     uint32_t primask;
@@ -2844,15 +2800,14 @@ status_t ENET_SendFrameZeroCopy(ENET_Type *base,
         }
         else
         {
-            assert((uint64_t)(uintptr_t)data + length - 1U <= UINT32_MAX);
             /* One transmit buffer is enough for one frame. */
             if (handle->txBuffSizeAlign[ringId] >= length)
             {
                 /* Copy data to the buffer for uDMA transfer. */
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                data = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uintptr_t)data, kMEMORY_Local2DMA);
+                data = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)data, kMEMORY_Local2DMA);
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-                curBuffDescrip->buffer = (uint32_t)(uintptr_t)data;
+                curBuffDescrip->buffer = (uint8_t *)(uint32_t)data;
                 /* Set data length. */
                 curBuffDescrip->length = (uint16_t)length;
 #ifdef ENET_ENHANCEDBUFFERDESCRIPTOR_MODE
@@ -2910,9 +2865,9 @@ status_t ENET_SendFrameZeroCopy(ENET_Type *base,
                     /* Update the size left to be transmit. */
                     sizeleft = length - len;
 #if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET
-                    data = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uintptr_t)data, kMEMORY_Local2DMA);
+                    data = (uint8_t *)MEMORY_ConvertMemoryMapAddress((uint32_t)data, kMEMORY_Local2DMA);
 #endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
-                    data_temp = (uintptr_t)data + len;
+                    data_temp = (uint8_t *)(uint32_t)data + len;
 
                     /* Increase the current software index of BD */
                     txBdRing->txGenIdx = ENET_IncreaseIndex(txBdRing->txGenIdx, txBdRing->txRingLen);
@@ -2920,7 +2875,7 @@ status_t ENET_SendFrameZeroCopy(ENET_Type *base,
                     if (sizeleft > handle->txBuffSizeAlign[ringId])
                     {
                         /* Set buffer. */
-                        curBuffDescrip->buffer = (uint32_t)data_temp;
+                        curBuffDescrip->buffer = data_temp;
                         /* Data length update. */
                         curBuffDescrip->length = handle->txBuffSizeAlign[ringId];
                         len += handle->txBuffSizeAlign[ringId];
@@ -2942,7 +2897,7 @@ status_t ENET_SendFrameZeroCopy(ENET_Type *base,
                     }
                     else
                     {
-                        curBuffDescrip->buffer = (uint32_t)data_temp;
+                        curBuffDescrip->buffer = data_temp;
                         curBuffDescrip->length = (uint16_t)sizeleft;
                         /* Set Last buffer wrap flag. */
                         curBuffDescrip->control |= ENET_BUFFDESCRIPTOR_TX_READY_MASK | ENET_BUFFDESCRIPTOR_TX_LAST_MASK;
@@ -3830,21 +3785,7 @@ void ENET_Error_DriverIRQHandler(void)
     ENET_ErrIRQHandler(ENET);
     SDK_ISR_EXIT_BARRIER;
 }
-#else
-
-void ENET_MAC0_Rx_Tx_Done1_DriverIRQHandler(void);
-void ENET_MAC0_Rx_Tx_Done1_DriverIRQHandler(void)
-{
-    ENET_CommonFrame1IRQHandler(ENET);
-    SDK_ISR_EXIT_BARRIER;
-}
-void ENET_MAC0_Rx_Tx_Done2_DriverIRQHandler(void);
-void ENET_MAC0_Rx_Tx_Done2_DriverIRQHandler(void)
-{
-    ENET_CommonFrame2IRQHandler(ENET);
-    SDK_ISR_EXIT_BARRIER;
-}
-#endif
+#endif /* FSL_FEATURE_ENET_QUEUE < 2 */
 
 void ENET_DriverIRQHandler(void);
 void ENET_DriverIRQHandler(void)
@@ -3971,14 +3912,14 @@ void ENET_1G_1588_Timer_DriverIRQHandler(void)
 #endif /* ENET_1G */
 
 #if defined(ENET1)
-void ENET1_MAC0_Rx_Tx_Done1_DriverIRQHandler(void);
-void ENET1_MAC0_Rx_Tx_Done1_DriverIRQHandler(void)
+void ENET1_MAC0_Rx_Tx_Done0_DriverIRQHandler(void);
+void ENET1_MAC0_Rx_Tx_Done0_DriverIRQHandler(void)
 {
     ENET_CommonFrame1IRQHandler(ENET1);
     SDK_ISR_EXIT_BARRIER;
 }
-void ENET1_MAC0_Rx_Tx_Done2_DriverIRQHandler(void);
-void ENET1_MAC0_Rx_Tx_Done2_DriverIRQHandler(void)
+void ENET1_MAC0_Rx_Tx_Done1_DriverIRQHandler(void);
+void ENET1_MAC0_Rx_Tx_Done1_DriverIRQHandler(void)
 {
     ENET_CommonFrame2IRQHandler(ENET1);
     SDK_ISR_EXIT_BARRIER;

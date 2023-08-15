@@ -18,13 +18,15 @@ web server, Python host access, TFTP, USB memory stick ...
   toggle the three LEDs on board on and off
 * "rawspi" command:
   fire a SPI transaction with a byte sequence
-* prepared: hve SPI bus with two SPI_CSx signals:
+* prepared: have SPI bus with two SPI_CSx signals:
   generate SPI_CSx in "SW mode" - works
 * USB Memory Stick (with FAT32) and commands:
   "umdir", "umprint"
 * Web Server:
-  but a conflict with USB Memory (if disabled: fine, ie enabled:
-  refresh page stops working after 4 times)
+  access via 100M PHY or via 1G PHY - both PHYs are working now
+  use "ipaddr" to see which ETH PHY is connected, use name in Web Browser, e.g.:
+  "maaxboard/" or "maaxboardg/" (100M vs. 1G, mDNS working)
+  (WiFi is not enabled yet)
 
 ## Testing SPI
 connect J1 pin 19 and pin 21, use command "rawspi" in order to
@@ -34,9 +36,8 @@ send a sequence of bytes.
 * second SPI CS signal (a bus with two slaves connected)
 * SYS_CFG: have a persistent storage of system parameters,
   (e.g. SPI modes)
-* add Web Server:
-  to access via Web Browser, from a Python script
-  web page working but incomplete
+* Web Server:
+  access from a Python script
 * add TFTP:
   transfer files to/from USB Memory Stick
 * add "Pico-C":
@@ -46,7 +47,7 @@ send a sequence of bytes.
 
 ## Remarks
 The Debug UART (LPUART1, via MCU-LINK header), prints some logs,
-esp. when a USB Memory Stick is plugged-in or removed.
+esp. when a USB Memory Stick is plugged-in or removed, ETH cable removed or connected...
 There is still a bit of code for the USB Memory Stick test, but it does
 not format the USB device anymore, neither it creates a new file.
 It should be safe to plug-in a FAT32 USB stick with existing files.
@@ -55,7 +56,5 @@ You can plug-in and remove without a command to release the USB Memory Stick
 (watch the Debug UART).
 
 ## Issues
-When USB Memory stick is enabled - it conflicts with HTTP server:
-after 4 times refresh - the HTTP server is dead,
-without USB Memory stick it is fine.
+the USB-C VCP UART needs one key press to enable, to see something on this (main) UART
 

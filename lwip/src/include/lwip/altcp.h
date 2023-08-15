@@ -80,8 +80,7 @@ struct altcp_pcb {
   u8_t pollinterval;
 };
 
-/** @ingroup altcp
- *  Struct containing an allocator and its state. */
+/** @ingroup altcp */
 typedef struct altcp_allocator_s {
   /** Allocator function */
   altcp_new_fn  alloc;
