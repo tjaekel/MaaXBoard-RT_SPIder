@@ -645,6 +645,30 @@ static void sendUSBEvent(void) {
 
 /* -------- public API --------------- */
 
+#define HTTP_OUT_BUF_SIZE		2048
+static char sHTTPoutBuffer[HTTP_OUT_BUF_SIZE];
+static unsigned long sHTTPoutIdx = 0;
+
+void HTTP_OutBufferClear(void)
+{
+	sHTTPoutIdx = 0;
+}
+
+char *HTTP_GetOutBuffer(unsigned long *l)
+{
+	*l = sHTTPoutIdx;
+	return sHTTPoutBuffer;
+}
+
+static void HTTP_PutOutBuffer(const char *s, unsigned long l)
+{
+	if ((sHTTPoutIdx + l) > HTTP_OUT_BUF_SIZE)
+		l = HTTP_OUT_BUF_SIZE - sHTTPoutIdx;
+
+	memcpy(&sHTTPoutBuffer[sHTTPoutIdx], s, l);
+	sHTTPoutIdx += l;
+}
+
 void VCP_UART_putString(const char *s, EResultOut out)
 {
 	/* TODO: we could check if the previous buffer was sent or how much is free */
@@ -678,6 +702,12 @@ void VCP_UART_putString(const char *s, EResultOut out)
 	if (out == DEBUG_OUT)
 	{
 		DbgConsole_Printf(s);
+		return;
+	}
+
+	if (out == HTTPD_OUT)
+	{
+		HTTP_PutOutBuffer(s, strlen(s));
 		return;
 	}
 }
@@ -879,18 +909,34 @@ void UART_Send(const char* str, int chrs, EResultOut out)
 	uint32_t size = chrs;
 	usb_status_t error = kStatus_USB_Error;
 
-	memcpy(s_currSendBuf, str, size);
-
-	if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
+	if (out == UART_OUT)
 	{
-		error = USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
-		if (error != kStatus_USB_Success)
+		memcpy(s_currSendBuf, str, size);
+
+		if ((1U == s_cdcVcom.attach) && (1U == s_cdcVcom.startTransactions))
 		{
-			/* wait and try again:
-			 * this is also used in VCP_UART_getSring(), wenn calling too fast again the USB send - it will fail!
-			 */
-			OSA_TimeDelay(1);
-			USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+			error = USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+			if (error != kStatus_USB_Success)
+			{
+				/* wait and try again:
+				 * this is also used in VCP_UART_getSring(), wenn calling too fast again the USB send - it will fail!
+				 */
+				OSA_TimeDelay(1);
+				USB_DeviceCdcAcmSend(s_cdcVcom.cdcAcmHandle, USB_CDC_VCOM_BULK_IN_ENDPOINT, s_currSendBuf, size);
+			}
 		}
+		return;
+	}
+
+	if (out == HTTPD_OUT)
+	{
+		HTTP_PutOutBuffer(str, chrs);
+		return;
+	}
+
+	if (out == DEBUG_OUT)
+	{
+		/* not used here */
+		return;
 	}
 }

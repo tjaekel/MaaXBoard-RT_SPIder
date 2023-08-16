@@ -28,6 +28,9 @@ char *VCP_UART_getString(void);
 void UART_Send(const char* str, int chrs, EResultOut out);
 int UART_getCharNW();
 
+void HTTP_OutBufferClear(void);
+char *HTTP_GetOutBuffer(unsigned long *l);
+
 #define print_log(out, ...)		do {\
 									if (out != SILENT) {\
 										snprintf(XPrintBuf, XPRINT_LEN - 1, __VA_ARGS__);\

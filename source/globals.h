@@ -21,7 +21,7 @@
  * Definitions
  ******************************************************************************/
 /* Freertos task can be enabled by setting 1, disabled by setting 0 */
-#define WIFI_EN			0		//1 - TODO: does not work yet
+#define WIFI_EN			1		//1 - TODO: does not work yet
 #define ETH100MB_EN		1
 #define ETH1GB_EN		1
 
@@ -114,6 +114,12 @@ typedef enum
 	WIFI_IP,
 	WIFI_CONN
 }wifi_cmd;
+
+typedef enum
+{
+	GUI_TASK,
+	CONSOLE_TASK
+}requesting_task;
 
 /*! wifi command structure for other tasks */
 struct t_user_wifi_command

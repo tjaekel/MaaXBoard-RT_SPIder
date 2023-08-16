@@ -37,6 +37,7 @@
 #include "lwip/apps/mdns.h"
 
 #include "VCP_UART.h"
+#include "cmd_dec.h"
 
 /*******************************************************************************
  * Definitions
@@ -87,6 +88,7 @@ static const HTTPSRV_AUTH_REALM_STRUCT auth_realms[] = {
 };
 
 char cgi_data[CGI_DATA_LENGTH_MAX + 1];
+char cgi_data2[] = "Hello from CGI";
 
 const HTTPSRV_CGI_LINK_STRUCT cgi_lnk_tbl[] = {
     {"rtcdata", cgi_rtc_data},
@@ -154,18 +156,69 @@ static int cgi_example(HTTPSRV_CGI_REQ_STRUCT *param)
 
     if (param->request_method == HTTPSRV_REQ_GET)
     {
+#if 0
         char *c;
 
         /* Replace '+' with spaces. */
-        while ((c = strchr(cgi_data, '+')) != NULL)
+        while ((c = strchr(cgi_data2, '+')) != NULL)
         {
             *c = ' ';
         }
         response.content_type   = HTTPSRV_CONTENT_TYPE_PLAIN;
-        response.data           = cgi_data;
-        response.data_length    = strlen(cgi_data);
+        response.data           = cgi_data2;
+        response.data_length    = strlen(cgi_data2);
         response.content_length = response.data_length;
         HTTPSRV_cgi_write(&response);
+#else
+        extern const unsigned char httpsrv_fs_webpage_index_html[];
+
+        unsigned long l = 0;
+        unsigned char *p;
+        char *cmd, *c;
+
+        cmd = strstr(param->query_string, "CMD=");
+        if (cmd)
+        	cmd += 4;
+        /* cmd is now our string as command, just substitute '+' to space */
+        c = cmd;
+        while ( *c )
+        {
+        	if (*c == '+')
+        		*c = ' ';
+        	c++;
+        }
+        /* call the command interpreter */
+        HTTP_OutBufferClear();
+        CMD_DEC_execute(cmd, HTTPD_OUT);
+
+        /* Write the response using chunked transmission coding. */
+        response.content_type = HTTPSRV_CONTENT_TYPE_HTML;
+        /* Set content length to -1 to indicate unknown content length. */
+        response.content_length = -1;
+        response.data           = (unsigned char *)httpsrv_fs_webpage_index_html;
+        p = strstr(httpsrv_fs_webpage_index_html, "</textarea");
+        if (p)
+        {
+        	l = p - httpsrv_fs_webpage_index_html - 1;
+        }
+        response.data_length    = l;
+        HTTPSRV_cgi_write(&response);
+
+        c = HTTP_GetOutBuffer(&l);
+        response.data        = c;		/* send the command response here */
+        response.data_length = l;
+        HTTPSRV_cgi_write(&response);
+
+        if (p)
+        {
+        	response.data        = p;
+        	response.data_length = strlen(response.data);
+        	HTTPSRV_cgi_write(&response);
+        }
+
+        response.data_length = 0;
+        HTTPSRV_cgi_write(&response);
+#endif
     }
     else if (param->request_method == HTTPSRV_REQ_POST)
     {
@@ -192,7 +245,8 @@ static int cgi_example(HTTPSRV_CGI_REQ_STRUCT *param)
         response.data        = "<html><head><title>POST successfull!</title>";
         response.data_length = strlen(response.data);
         HTTPSRV_cgi_write(&response);
-        response.data        = "<meta http-equiv=\"refresh\" content=\"0; url=cgi.html\"></head><body></body></html>";
+        /* send a temporary page which will "refresh" itself to the main page */
+        response.data        = "<meta http-equiv=\"refresh\" content=\"0; url=index.html\"></head><body></body></html>";
         response.data_length = strlen(response.data);
         HTTPSRV_cgi_write(&response);
         response.data_length = 0;
