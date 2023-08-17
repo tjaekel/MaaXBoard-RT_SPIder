@@ -13,6 +13,7 @@
 
 #include "lwip/tcpip.h"
 
+#include "TFTP.h"
 #include "VCP_UART.h"
 
 #define	HTTPD_PRIORITY 	1
@@ -58,6 +59,8 @@ static void main_task(void *arg)
     http_server_enable_mdns(&netif_100m, MDNS_HOSTNAME, &netif_1g, MDNS_HOSTNAME_1G);
 
     http_server_socket_init();
+
+    TFTP_Init();
 
     vTaskDelete(NULL);
 }

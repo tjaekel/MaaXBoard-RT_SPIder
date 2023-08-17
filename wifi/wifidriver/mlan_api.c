@@ -1687,6 +1687,7 @@ char *wifi_get_country_str(int country)
 {
     switch (country)
     {
+#ifdef XXXX
         case COUNTRY_WW:
             return "WW ";
         case COUNTRY_US:
@@ -1707,6 +1708,7 @@ char *wifi_get_country_str(int country)
             return "JP ";
         case COUNTRY_CN:
             return "CN ";
+#endif
         default:
             return "WW ";
     }

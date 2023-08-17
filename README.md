@@ -27,6 +27,9 @@ web server, Python host access, TFTP, USB memory stick ...
   use "ipaddr" to see which ETH PHY is connected, use name in Web Browser, e.g.:
   "maaxboard/" or "maaxboardg/" (100M vs. 1G, mDNS working)
   (WiFi is not enabled yet)
+  web page to enter commands is up and running
+* TFTP:
+  transfer files to/from USB memory stick via TFTP
 
 ## Testing SPI
 connect J1 pin 19 and pin 21, use command "rawspi" in order to
@@ -38,12 +41,11 @@ send a sequence of bytes.
   (e.g. SPI modes)
 * Web Server:
   access from a Python script
-* add TFTP:
-  transfer files to/from USB Memory Stick
 * add "Pico-C":
   my script engine to execute C-code scripts
 * optimization:
   for performance, memory usage and footprint
+* WIFI is prepared but not yet working (files in project, but compile errors)
 
 ## Remarks
 The Debug UART (LPUART1, via MCU-LINK header), prints some logs,
@@ -54,6 +56,9 @@ It should be safe to plug-in a FAT32 USB stick with existing files.
 
 You can plug-in and remove without a command to release the USB Memory Stick
 (watch the Debug UART).
+
+When you use files, e.g. via "sdprint" or via TFTP - you have to specify the file name as:
+"1:/filename" (with the drive letter 1:/ in front)
 
 ## Issues
 the USB-C VCP UART needs one key press to enable, to see something on this (main) UART

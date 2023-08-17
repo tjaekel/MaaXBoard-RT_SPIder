@@ -21,7 +21,7 @@
  * Definitions
  ******************************************************************************/
 /* Freertos task can be enabled by setting 1, disabled by setting 0 */
-#define WIFI_EN			1		//1 - TODO: does not work yet
+#define WIFI_EN			0		//1 - TODO: does not work yet
 #define ETH100MB_EN		1
 #define ETH1GB_EN		1
 
@@ -128,14 +128,6 @@ struct t_user_wifi_command
 	requesting_task task_name;	/*!< task name */
 	void *payload;		/* could be data about external AP info*/
 };
-#endif
-
-#if 0
-typedef enum
-{
-	GUI_TASK,
-	CONSOLE_TASK
-}requesting_task;
 #endif
 
 #define WIFI_GUI_NDATA		(1UL<<0UL)
