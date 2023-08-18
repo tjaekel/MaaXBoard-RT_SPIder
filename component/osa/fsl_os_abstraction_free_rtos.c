@@ -299,7 +299,7 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
  * Function Name : OSA_TaskDestroy
  * Description   : This function destroy a task.
  * Param[in]     :taskHandle - Thread handle.
- * Return KOSA_StatusSuccess if the task is destroied, otherwise return KOSA_StatusError.
+ * Return KOSA_StatusSuccess if the task is destroyed, otherwise return KOSA_StatusError.
  *
  *END**************************************************************************/
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))

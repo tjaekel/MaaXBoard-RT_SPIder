@@ -37,19 +37,21 @@
  */
 #define NO_SYS 0
 
-#define CONFIG_NETWORK_HIGH_PERF 1
+#define CONFIG_NETWORK_HIGH_PERF 	1
 
-#define MAX_SOCKETS_TCP           8
-#define MAX_LISTENING_SOCKETS_TCP 4
-#define MAX_SOCKETS_UDP           6
-#define TCP_SND_BUF_COUNT         2
-#define TCPIP_STACK_TX_HEAP_SIZE  0
-#define LWIP_COMPAT_SOCKETS       2
+#define MAX_SOCKETS_TCP           	8
+#define MAX_LISTENING_SOCKETS_TCP 	4
+#define MAX_SOCKETS_UDP           	6
+#define TCP_SND_BUF_COUNT         	2
+#define TCPIP_STACK_TX_HEAP_SIZE  	0
+#define LWIP_COMPAT_SOCKETS       	2
 
 /* Enable IGMP and MDNS */
-#define LWIP_IGMP                  1
-#define LWIP_MDNS_RESPONDER        1
-#define LWIP_NUM_NETIF_CLIENT_DATA (LWIP_MDNS_RESPONDER)
+#define LWIP_IGMP                  	1
+#define LWIP_MDNS_RESPONDER        	1
+#define LWIP_NUM_NETIF_CLIENT_DATA 	(LWIP_MDNS_RESPONDER)
+
+#define LWIP_UDP					1
 
 /**
  * Loopback demo related options.
@@ -59,9 +61,9 @@
 #define LWIP_NETIF_LOOPBACK_MULTITHREADING 1
 #define LWIP_LOOPBACK_MAX_PBUFS            8
 
-#define TCPIP_THREAD_NAME      "tcp/ip"
-#define TCPIP_THREAD_STACKSIZE 768
-#define TCPIP_THREAD_PRIO      4
+#define TCPIP_THREAD_NAME      		"tcp/ip"
+#define TCPIP_THREAD_STACKSIZE 		768
+#define TCPIP_THREAD_PRIO      		4
 #ifdef CONFIG_NETWORK_HIGH_PERF
 #define TCPIP_MBOX_SIZE 64
 #else

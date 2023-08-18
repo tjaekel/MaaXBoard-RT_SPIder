@@ -99,6 +99,7 @@
 									<listOptionValue builtIn="false" value="SDK_DEBUGCONSOLE=1"/>
 									<listOptionValue builtIn="false" value="XIP_EXTERNAL_FLASH=1"/>
 									<listOptionValue builtIn="false" value="XIP_BOOT_HEADER_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="XIP_BOOT_HEADER_DCD_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="USB_STACK_FREERTOS"/>
 									<listOptionValue builtIn="false" value="USB_STACK_FREERTOS_HEAP_SIZE=32768"/>
 									<listOptionValue builtIn="false" value="SDK_OS_FREE_RTOS"/>
@@ -122,6 +123,7 @@
 									<listOptionValue builtIn="false" value="ETH1GB_EN=1"/>
 									<listOptionValue builtIn="false" value="WITH_HTTPD_SERVER"/>
 									<listOptionValue builtIn="false" value="WITH_USB_MEMORY"/>
+									<listOptionValue builtIn="false" value="USE_SDRAM"/>
 									<listOptionValue builtIn="false" value="LWIP_TIMEVAL_PRIVATE=0"/>
 									<listOptionValue builtIn="false" value="SDIO_ENABLED"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>

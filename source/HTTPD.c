@@ -14,6 +14,8 @@
 #include "lwip/tcpip.h"
 
 #include "TFTP.h"
+#include "UDP.h"
+#include "NETCMD_thread.h"
 #include "VCP_UART.h"
 
 #define	HTTPD_PRIORITY 	1
@@ -61,6 +63,10 @@ static void main_task(void *arg)
     http_server_socket_init();
 
     TFTP_Init();
+
+    UDP_Init();
+
+    netcmd_taskCreate();
 
     vTaskDelete(NULL);
 }

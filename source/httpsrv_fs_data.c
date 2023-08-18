@@ -1419,7 +1419,7 @@ static const unsigned char httpsrv_fs_webpage_welcome_html[] = {
     0x6d, 0x6c, 0x3e};
 #else
 /* static */ const unsigned char httpsrv_fs_webpage_index_html[] = {
-    /* webpage/index.html */
+/* webpage/index.html */
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\r\n\
 <html xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" xmlns=\"http://www.w3.org/TR/REC-html40\">\r\n\
 <head>\r\n\

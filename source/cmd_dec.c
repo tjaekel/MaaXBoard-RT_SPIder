@@ -15,6 +15,7 @@
 #include "HTTPD.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
+#include "UDP.h"
 #include "cmd_dec.h"
 
 /* prototypes */
@@ -38,6 +39,11 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out);
+
+ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out);
+
+ECMD_DEC_Status CMD_udpip(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_udptest(TCMD_DEC_Results *res, EResultOut out);
 
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
@@ -107,6 +113,16 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"USB memory print file <1:/filename>",
 				.func = CMD_umprint
 		},
+		{
+				.cmd = (const char *)"udpip",
+				.help = (const char *)"set udip destination <ipaddr>",
+				.func = CMD_udpip
+		},
+		{
+				.cmd = (const char *)"udptest",
+				.help = (const char *)"send test data via UDP",
+				.func = CMD_udptest
+		},
 
 		//SPI
 		{
@@ -118,6 +134,11 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		//Chip specific
 
 		//other expert, test commands
+		{
+				.cmd = (const char *)"test",
+				.help = (const char *)"expert test",
+				.func = CMD_test
+		},
 };
 
 /**
@@ -662,7 +683,10 @@ ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out)
 {
 	(void)res;
 	int temp;
+	int inUse, watermark, max;
 
+	MEM_PoolCounters(&inUse, &watermark, &max);
+	print_log(out, "MEM Pool        : %d | %d | %d\r\n", inUse, watermark, max);
 	print_log(out, "MCU core clock  : %d [Hz]\r\n", SystemCoreClock);
 	temp = TEMP_Get();
 	print_log(out, "MCU temperature : %d.%d [C]\r\n", temp / 10, temp % 10);
@@ -720,6 +744,103 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 #ifdef WITH_HTTPD_SERVER
 	HTTPD_GetIPAddress(out);
 #endif
+
+	return CMD_DEC_OK;
+}
+
+/* SDRAM test */
+uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
+#define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
+
+ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
+{
+	uint32_t *p = sdRAM;
+	int i, j;
+
+	print_log(UART_OUT, "*D: SDRAM addr: %lx\r\n", p);
+	for (i = 0; i < sizeof(sdRAM); i++)
+	{
+		*p++ = i;
+	}
+	p = sdRAM;
+	j = 0;
+	for (i = 0; i < sizeof(sdRAM); i++)
+	{
+		if (*p != i)
+		{
+			print_log(UART_OUT, "*D: SDRAM mismatch: %lx <> %lx\r\n", *p, i);
+			j++;
+		}
+		p++;
+		if (j > 10)
+			break;
+	}
+	if ( !j )
+		print_log(UART_OUT, "*D: SDRAM match\r\n");
+
+	/* test the last location */
+	p = sdRAM;
+	p += SDRAM_SIZE_WORDS - 1;
+
+	*p = 0x12345678;
+	print_log(UART_OUT, "*D: SDRAM loc: %lx = %lx\r\n", p, *p);
+
+	return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_udpip(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)out;
+	unsigned long ip[4];
+	unsigned long ipAddr;
+
+	sscanf(res->str, "%lu.%lu.%lu.%lu", &ip[0], &ip[1], &ip[2], &ip[3]);
+	ipAddr  = ip[0];
+	ipAddr |= ip[1] << 8;
+	ipAddr |= ip[2] << 16;
+	ipAddr |= ip[3] << 24;
+
+	netcmd_setUDPdest(ipAddr);
+
+	return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_udptest(TCMD_DEC_Results *res, EResultOut out)
+{
+	//(void)out;
+
+	int i;
+	unsigned long startTick, endTick;
+	char *p;
+
+	startTick = OSA_TimeGetMsec();
+	//test: let it run for 10 ms (ticks)
+	i = 0;
+
+	p = (char *)MEM_PoolAlloc(MEM_POOL_SEG_BYTES);
+	if ( !p )
+		return CMD_DEC_OOMEM;
+
+	/* this FAILS: we lose packets! (non-blocking send), just 85 from 537 generated packets! */
+	do
+	{
+		/**
+		 * ATTENTION: the maximum packet length we can send is 2952 bytes!
+		 * everything larger is not received by host!
+		 */
+		if (res->val[0] == 0)
+			netcmd_sendUDP(0, p, 512, 1);
+		else
+			netcmd_sendUDP(0, p, res->val[0], 1);
+		i++;
+		//wait 1 ms
+		OSA_TimeDelay(1);
+		endTick = OSA_TimeGetMsec();
+	} while (endTick < (startTick + 10));
+
+	print_log(out, (const char *)"time diff: %d [ms] | %d times\r\n", (int)(endTick - startTick), i);
+
+	MEM_PoolFree(p);
 
 	return CMD_DEC_OK;
 }
