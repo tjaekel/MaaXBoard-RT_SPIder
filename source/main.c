@@ -22,13 +22,12 @@
 #include "HTTPD.h"
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
+#include "ITM_print.h"
 #include "cmd_dec.h"
 
 #ifndef APP_TASK_STACK_SIZE
-#define APP_TASK_STACK_SIZE 5000L
+#define APP_TASK_STACK_SIZE 4000L
 #endif
-
-static char const *s_appName = "CMDtask";
 
 int USBH_Init(void);
 
@@ -89,15 +88,17 @@ void main(void)
 
     BOARD_InitPins();
     BOARD_BootClockRUN();
+    CLOCK_EnableClock(kCLOCK_Cstrace);
     BOARD_InitDebugConsole();
 
     MEM_PoolInit();
     LED_Init();
     GPIO_Init();
     TEMP_Init();
+    ITM_Init();
 
     if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
-                    s_appName,                                     /* task name for kernel awareness debugging */
+    				"CMD task",                                     /* task name for kernel awareness debugging */
                     APP_TASK_STACK_SIZE / sizeof(portSTACK_TYPE),  /* task stack size                          */
                     &s_cdcVcom,                                    /* optional task startup argument           */
                     4,                                             /* initial priority                         */

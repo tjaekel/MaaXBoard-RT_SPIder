@@ -414,7 +414,7 @@ void BOARD_InitPins(void) {
 
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_AD_31_GPIO9_IO30,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      0U);
+      0x00U);
 
 #ifndef SPI_NSS_HW
   //IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16 as SPI_CS0
@@ -422,14 +422,31 @@ void BOARD_InitPins(void) {
 
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      02U);
+      0x02U);
 #endif
   /* add SPI_CS1 - as SW_NSS only possible: IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16 */
   GPIO_PinInit(GPIO8, 16U, &USER_GPIO_config);
 
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      02U);
+      0x02U);
+
+#if 0
+  /* enable SWO for ITM_Print */
+#if 0
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_DISP_B2_07_ARM_TRACE_SWO,     	/*  is configured as ARM_TRACE_SWO */
+		  0x00U);                                       /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinConfig(IOMUXC_GPIO_DISP_B2_07_ARM_TRACE_SWO, 0x00F9u /*0x00F9u*/);
+#else
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO,     		/*  is configured as ARM_TRACE_SWO */
+		  0x00U);                                       /* Software Input On Field: Input Path is determined by functionality */
+  IOMUXC_SetPinConfig(IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO, 0x00F9u /*0x00F9u*/);
+#endif
+
+  ////CLOCK_EnableClock(kCLOCK_Cstrace);
+#endif
 }
 
 

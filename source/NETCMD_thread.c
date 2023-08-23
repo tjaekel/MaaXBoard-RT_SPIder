@@ -66,7 +66,7 @@ void SendPromptHTTPD(void)
 
 void netcmd_taskCreate(void)
 {
-	REST_APIThreadID = xTaskCreate(NETCMDThread, "NETCMD", configMINIMAL_STACK_SIZE * 2, NULL, 1, NULL);
+	REST_APIThreadID = xTaskCreate(NETCMDThread, "NETCMD", configMINIMAL_STACK_SIZE * 2, NULL, 2, NULL);
 }
 
 /* Private function prototypes -----------------------------------------------*/
@@ -404,7 +404,6 @@ static int netcmd_server_serve(struct netconn *conn)
 				  if (cmdStr)
 				  {
 					  unsigned long len;
-					  int flagHTTP = 0;
 
 					  /* terminate ASCII string */
 					  inpBuf[totalLen] = '\0';
@@ -414,22 +413,16 @@ static int netcmd_server_serve(struct netconn *conn)
 					  if (resStr)
 					  {
 						  *resStr = '\0';
-						  flagHTTP = 1;
 					  }
 					  convertURL(cmdStr, &inpBuf[6], MEM_POOL_SEG_BYTES);
 					  /* call the command interpreter */
 					  HTTP_OutBufferClear();
-					  if (flagHTTP)
-					  {
-						  /* place a correct HTTP response header in response */
-						  VCP_UART_putString("HTTP/1.0 200 OK\r\nContent-type: text/plain\r\n\r\n", HTTPD_OUT);
-					  }
 
 					  print_log(DEBUG_OUT, "*D: %d |%s|\r\n", strlen(cmdStr), cmdStr);
 
 					  CMD_DEC_execute(cmdStr, HTTPD_OUT);
 					  /* put a prompt into the output buffer */
-					  SendPromptHTTPD();
+					  SendPromptHTTPD();		//do not send to a web browser!
 
 					  /* get the output of command decoder and fill into form */
 					  resStr = HTTP_GetOutBuffer(&len);
@@ -443,19 +436,6 @@ static int netcmd_server_serve(struct netconn *conn)
 						  }
 
 						  /* do not send anything else here afterwards! */
-
-						  if (len == 3)
-						  {
-						  		if (strncmp("\r\n\003", resStr, 3) == 0)
-						  		{
-						  			int i;
-						  			////SYS_SetError(SYS_ERR_ASSERT);
-						  			print_log(DEBUG_OUT, "*A: %d\r\n", strlen(cmdStr));
-						  			for (i = 0; i < 16; i++)
-						  				print_log(DEBUG_OUT, "%02x ", inpBuf[i]);
-						  			print_log(DEBUG_OUT, "\r\n");
-						  		}
-						  }
 					  }
 					  MEM_PoolFree(cmdStr);
 				  }
@@ -498,22 +478,13 @@ static int netcmd_server_serve(struct netconn *conn)
 					  resStr = HTTP_GetOutBuffer(&len);
 					  if (len)
 					  {
-						  SCB_CleanDCache_by_Addr((uint32_t *)resStr, ((len+31)/32)*32);
-						  ////if (netconn_write(conn, resStr, len, NETCONN_NOCOPY) != ERR_OK)
-						  ////	SYS_SetError(SYS_ERR_NETWORK);
-
-						  if (len == 3)
+						  ////SCB_CleanDCache_by_Addr((uint32_t *)resStr, ((len+31)/32)*32);
+						  if (netconn_write(conn, resStr, len, NETCONN_NOCOPY) != ERR_OK)
 						  {
-							  if (strncmp("\r\n\003", resStr, 3) == 0)
-							  {
-								  int i;
-								  ////SYS_SetError(SYS_ERR_ASSERT);
-								  print_log(DEBUG_OUT, "*A: %d\r\n", strlen(cmdStr));
-								  for (i = 0; i < 16; i++)
-									  print_log(DEBUG_OUT, "%02x ", inpBuf[i]);
-								  print_log(DEBUG_OUT, "\r\n");
-							  }
+							  ////	SYS_SetError(SYS_ERR_NETWORK);
+							  print_log(DEBUG_OUT, "*D: netconn_write FAIL\r\n");
 						  }
+
 						  /* do not send anything else here afterwards! */
 					  }
 					  MEM_PoolFree(cmdStr);

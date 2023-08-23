@@ -12,7 +12,7 @@
 #define MEM_POOL_SEG_WORDS	  	1024			    	/* as unsigned long, 4x in bytes */
 #define MEM_POOL_TYPE         	unsigned long     		/* the type of buffer, aligned for 32bit ! */
 #define MEM_POOL_SEG_BYTES    	(MEM_POOL_SEG_WORDS * sizeof(MEM_POOL_TYPE))
-#define MEM_POOL_MEMORY_LOC   			            	/* were is the memory location for it */
+#define MEM_POOL_MEMORY_LOC   	__attribute__((section(".data.$SRAM_OC1")))		            	/* were is the memory location for it */
 #define MEM_POOL_MGNT_LOC   			            	/* were is the memory location for it */
 
 #define ALLOC_USED		1		//start of allocated entries

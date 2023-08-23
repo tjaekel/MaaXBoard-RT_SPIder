@@ -14,6 +14,7 @@
 #include "clock_config.h"
 #include "board.h"
 
+#include "globals.h"
 #include "virtual_com.h"
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
 #include "fsl_sysmpu.h"
@@ -57,7 +58,7 @@ static void sendUSBEvent(void);
  * Variables
  ******************************************************************************/
 
-static const char sWelcomeMessage[] = "\r\n*** SPIder version 2.0 " __DATE__ " ***\r\n";
+static const char sWelcomeMessage[] = "\r\n*** SPIder version " VERSION_INFO "(" __DATE__ ") ***\r\n";
 
 extern usb_device_endpoint_struct_t g_UsbDeviceCdcVcomDicEndpoints[];
 extern usb_device_class_struct_t g_UsbDeviceCdcVcomConfig;

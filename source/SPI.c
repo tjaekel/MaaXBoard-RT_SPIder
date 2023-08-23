@@ -16,6 +16,7 @@
 #endif
 
 #include "fsl_common.h"
+#include "FreeRTOS.h"
 #include "task.h"
 
 void SPI_SW_CS(int num, int state);

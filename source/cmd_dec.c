@@ -7,7 +7,9 @@
 
 #include <string.h>
 #include "fsl_os_abstraction.h"
+#include <task.h>
 
+#include "globals.h"
 #include "LED.h"
 #include "SPI.h"
 #include "GPIO.h"
@@ -17,6 +19,8 @@
 #include "VCP_UART.h"
 #include "UDP.h"
 #include "cmd_dec.h"
+
+#include "ITM_print.h"
 
 /* prototypes */
 ECMD_DEC_Status CMD_NotImplemented(TCMD_DEC_Results *res, EResultOut out);
@@ -45,6 +49,8 @@ ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_udpip(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_udptest(TCMD_DEC_Results *res, EResultOut out);
 
+ECMD_DEC_Status CMD_tasks(TCMD_DEC_Results *res, EResultOut out);
+
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
 				.cmd = (const char *)"help",
@@ -60,6 +66,11 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.cmd = (const char *)"syserr",
 				.help = (const char *)"display sys error [-d]",
 				.func = CMD_syserr
+		},
+		{
+				.cmd = (const char *)"tasks",
+				.help = (const char *)"display RTOS tasks",
+				.func = CMD_tasks
 		},
 		{
 				.cmd = (const char *)"debug",
@@ -686,6 +697,7 @@ ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out)
 	int inUse, watermark, max;
 
 	MEM_PoolCounters(&inUse, &watermark, &max);
+	print_log(out, "Version         : %s\r\n", VERSION_INFO);
 	print_log(out, "MEM Pool        : %d | %d | %d\r\n", inUse, watermark, max);
 	print_log(out, "MCU core clock  : %d [Hz]\r\n", SystemCoreClock);
 	temp = TEMP_Get();
@@ -748,12 +760,15 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 	return CMD_DEC_OK;
 }
 
+#ifdef SDRAM_TEST
 /* SDRAM test */
 uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
 #define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
+#endif
 
 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 {
+#ifdef SDRAM_TEST
 	uint32_t *p = sdRAM;
 	int i, j;
 
@@ -784,6 +799,9 @@ ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 
 	*p = 0x12345678;
 	print_log(UART_OUT, "*D: SDRAM loc: %lx = %lx\r\n", p, *p);
+#endif
+
+	ITM_PrintString("hello from SWO\r\n");
 
 	return CMD_DEC_OK;
 }
@@ -843,4 +861,24 @@ ECMD_DEC_Status CMD_udptest(TCMD_DEC_Results *res, EResultOut out)
 	MEM_PoolFree(p);
 
 	return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_tasks(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)res;
+
+	uint8_t *buf;
+	buf = MEM_PoolAlloc(MEM_POOL_SEG_BYTES);
+
+	if (buf)
+	{
+		*buf = '\0';
+		vTaskList(buf);
+		UART_Send(buf, (int)strlen((const char *)buf), out);
+
+		MEM_PoolFree(buf);
+		return CMD_DEC_OK;
+	}
+	else
+		return CMD_DEC_OOMEM;
 }

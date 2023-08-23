@@ -521,6 +521,7 @@ void http_server_socket_init(void)
 #if HTTPSRV_CFG_WEBSOCKET_ENABLED
     params.ws_tbl = ws_tbl;
 #endif
+    params.task_prio = 2;
 
     /* Init HTTP Server.*/
     httpsrv_handle = HTTPSRV_init(&params);

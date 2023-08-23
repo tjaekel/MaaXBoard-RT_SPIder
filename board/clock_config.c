@@ -354,7 +354,7 @@ void BOARD_BootClockRUN(void)
     {
     }
 
-    /* Swicth both core, M7 Systick and Bus_Lpsr to OscRC48MDiv2 first */
+    /* Switch both core, M7 Systick and Bus_Lpsr to OscRC48MDiv2 first */
 #if __CORTEX_M == 7
     rootCfg.mux = kCLOCK_M7_ClockRoot_MuxOscRc48MDiv2;
     rootCfg.div = 1;
@@ -469,9 +469,11 @@ void BOARD_BootClockRUN(void)
     rootCfg.div = 1;
     CLOCK_SetRootClock(kCLOCK_Root_Cssys, &rootCfg);
 
-    /* Configure CSTRACE using SYS_PLL2_CLK */
+    /* Configure CSTRACE using SYS_PLL2_CLK - 660 MHz */
     rootCfg.mux = kCLOCK_CSTRACE_ClockRoot_MuxSysPll2Out;
-    rootCfg.div = 4;
+    rootCfg.div = 16;  //div 5 = 132 MHz
+    ////rootCfg.mux = kCLOCK_CSSYS_ClockRoot_MuxOscRc48MDiv2;
+    ////rootCfg.div = 1;	//1; div 2 = 24 MHz
     CLOCK_SetRootClock(kCLOCK_Root_Cstrace, &rootCfg);
 
     /* Configure M4_SYSTICK using OSC_RC_48M_DIV2 */

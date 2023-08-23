@@ -17,14 +17,23 @@ def Main():
 
     message = ""
 
+    mySocket = socket.create_connection((host, port))
+    mySocket.setblocking(1)
+
     while message != 'q':
         message = input("-> ")
         if message == 'q':
             break;
-        message = 'GET /C' + message + '\n'
-        mySocket = socket.create_connection((host, port))
-        mySocket.setblocking(1)
+        if False :
+            #send as ASCII text command
+            message = 'GET /C' + message + '\n'
+        else :
+            #send as BINARY command: 'c' plus 2-byte length as Big Endian
+            l = len(message)
+            message = 'GET /c' + chr((l >> 8) & 0xff) + chr(l & 0xff) + message
+            
         mySocket.sendall(message.encode())
+
         data = mySocket.recv(4096).decode()
                  
         ##print ('Received from server: ' + data)

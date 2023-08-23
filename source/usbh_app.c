@@ -214,11 +214,11 @@ int USBH_Init(void)
 {
     USB_HostApplicationInit();
 
-    if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 3, NULL) != pdPASS)
+    if (xTaskCreate(USB_HostTask, "USBH task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 3, NULL) != pdPASS)
     {
         usb_echo("create host task error\r\n");
     }
-    if (xTaskCreate(USB_HostApplicationTask, "app task", 2300L / sizeof(portSTACK_TYPE), &g_MsdFatfsInstance, 3,
+    if (xTaskCreate(USB_HostApplicationTask, "USBH app task", 2300L / sizeof(portSTACK_TYPE), &g_MsdFatfsInstance, 3,
                     NULL) != pdPASS)
     {
         usb_echo("create host app task error\r\n");

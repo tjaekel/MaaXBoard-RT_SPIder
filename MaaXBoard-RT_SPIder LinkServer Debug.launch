@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.crt.dsfdebug.crtmcu.launchType">
     <stringAttribute key=".gdbinit" value=""/>
+    <stringAttribute key="InstructionTraceInfo" value="eJzFVd9vmzAQfp+0/8Hyewc0KaFSWZWSRpoUqirQ9HFy4EJZjc1s0x///QwYFjoSRdqk5Qnffff57rvz5er6raDoBYTMOfOx88XGCFjC05xlPn6Il2cevv76+dMVqALUdgGK5FTWhpiIDNQSiKoESBSSH1xsOh7NEuZsYKhjbuPwhkhA8zTVMdLHZxcT17Wn7uwco3ttAqZ8rEQF2Krxi8f4T7znup7jjuK/jfF7M/vSGee/jW8afO/aESqNLzzm00q8qoPuWJAElhVjQIepXFy6U88eL/VVzUWxmQVcQJRnTyrgRcmZRqFArnjy7OO7itL2GyMNX0MWKY3W4v63HzZd2nVjUGsyaJMBJLoaIojOV6K7qtiC8PG0rTyqypILBSkKijIkKnkyuqDgPaEQ8IqpGt7a7gXfNSZjqBlqqcxkogVRpD53DUGrnD07/SkkbyGRWsyJg/tE7DaRcZr2WsPSHkZJnGMkp+dy/m9oJi2N1YtrZqyWL6f6cRtZpenP9yBer9CG0Ap6PaxDeGuv4x3wwPA2r0wVp041bKtsDT/72nRopIhQetDLZqvoE6W9uzmt4AVo44zzAqQie0o1L3H+O8IsoW5rGal1Ze2nNZpqs1lOreHjAjgS9chFaqKaPKJ42XVg5nqmB0epTr9rL8O/uMsaLv3GNPxj+AXR2vnsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <booleanAttribute key="attach" value="false"/>
     <booleanAttribute key="boot.config.enable" value="false"/>
     <stringAttribute key="boot.configuration.control" value=""/>
@@ -31,14 +32,14 @@
     <booleanAttribute key="gdbserver.start" value="true"/>
     <booleanAttribute key="internal.attach.slave" value="false"/>
     <booleanAttribute key="internal.cache" value="false"/>
-    <stringAttribute key="internal.connect.script" value="RT1170_connect_M7_wake_M4.scp"/>
+    <stringAttribute key="internal.connect.script" value="CTNxxx_Connect.scp"/>
     <stringAttribute key="internal.core.index" value="0"/>
     <booleanAttribute key="internal.has_swo" value="true"/>
     <booleanAttribute key="internal.multi.swd" value="true"/>
     <stringAttribute key="internal.prelaunch.command" value=""/>
     <stringAttribute key="internal.reset.script" value="RT1170_reset.scp"/>
     <stringAttribute key="internal.resethandling" value=""/>
-    <stringAttribute key="internal.semihost" value="On"/>
+    <stringAttribute key="internal.semihost" value="Off"/>
     <stringAttribute key="internal.wirespeed" value=""/>
     <stringAttribute key="internal.wiretype" value="SWD"/>
     <stringAttribute key="isp.control" value="xxxx"/>
