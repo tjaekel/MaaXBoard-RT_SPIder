@@ -85,17 +85,14 @@ void main(void)
 #endif
 {
     BOARD_ConfigMPU();
-
     BOARD_InitPins();
     BOARD_BootClockRUN();
-    CLOCK_EnableClock(kCLOCK_Cstrace);
     BOARD_InitDebugConsole();
 
     MEM_PoolInit();
     LED_Init();
     GPIO_Init();
     TEMP_Init();
-    ITM_Init();
 
     if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
     				"CMD task",                                     /* task name for kernel awareness debugging */

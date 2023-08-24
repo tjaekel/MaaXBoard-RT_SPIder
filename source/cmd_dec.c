@@ -760,26 +760,42 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 	return CMD_DEC_OK;
 }
 
-#ifdef SDRAM_TEST
+//#ifdef SDRAM_TEST
 /* SDRAM test */
-uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
+uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM"))) = {0x11223344, 0x55667788, 0x99AABBCC};
 #define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
-#endif
+//#endif
 
 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 {
-#ifdef SDRAM_TEST
+//#ifdef SDRAM_TEST
 	uint32_t *p = sdRAM;
 	int i, j;
 
 	print_log(UART_OUT, "*D: SDRAM addr: %lx\r\n", p);
-	for (i = 0; i < sizeof(sdRAM); i++)
+	/* let's check if our sdRAM was initialized */
+	for (i = 0; i < 8; i++)
+	{
+		print_log(UART_OUT, "*D: %0lx ", *p++);
+	}
+	print_log(UART_OUT, "\r\n");
+
+	/* let's check what if and how initialized outside out sdRAM */
+	p = &sdRAM[1024];
+	for (i = 0; i < 8; i++)
+	{
+		print_log(UART_OUT, "*D: %0lx ", *p++);
+	}
+	print_log(UART_OUT, "\r\n");
+
+	p = sdRAM;
+	for (i = 0; i < (sizeof(sdRAM) / sizeof(uint32_t)); i++)
 	{
 		*p++ = i;
 	}
 	p = sdRAM;
 	j = 0;
-	for (i = 0; i < sizeof(sdRAM); i++)
+	for (i = 0; i < (sizeof(sdRAM) / sizeof(uint32_t)); i++)
 	{
 		if (*p != i)
 		{
@@ -799,9 +815,11 @@ ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 
 	*p = 0x12345678;
 	print_log(UART_OUT, "*D: SDRAM loc: %lx = %lx\r\n", p, *p);
-#endif
+//#endif
 
 	ITM_PrintString("hello from SWO\r\n");
+	ITM_PrintChar('!');
+	print_log(ITM_OUT, "\r\nHi!\r\n");
 
 	return CMD_DEC_OK;
 }

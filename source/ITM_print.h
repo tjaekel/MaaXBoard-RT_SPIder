@@ -9,6 +9,7 @@
 #define ITM_PRINT_H_
 
 int ITM_Init(void);
-void ITM_PrintString(char *s);
+void ITM_PrintChar(unsigned char chr);
+void ITM_PrintString(const char *s);
 
 #endif /* ITM_PRINT_H_ */

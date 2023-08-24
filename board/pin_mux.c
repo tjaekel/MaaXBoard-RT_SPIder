@@ -431,21 +431,21 @@ void BOARD_InitPins(void) {
 	  IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
       0x02U);
 
-#if 0
+#if 1
   /* enable SWO for ITM_Print */
-#if 0
   IOMUXC_SetPinMux(
-		  IOMUXC_GPIO_DISP_B2_07_ARM_TRACE_SWO,     	/*  is configured as ARM_TRACE_SWO */
-		  0x00U);                                       /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_DISP_B2_07_ARM_TRACE_SWO, 0x00F9u /*0x00F9u*/);
-#else
-  IOMUXC_SetPinMux(
-		  IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO,     		/*  is configured as ARM_TRACE_SWO */
-		  0x00U);                                       /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO, 0x00F9u /*0x00F9u*/);
-#endif
+      IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO,      /* GPIO_LPSR_11 is configured as ARM_TRACE_SWO */
+      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
 
-  ////CLOCK_EnableClock(kCLOCK_Cstrace);
+  IOMUXC_SetPinConfig(
+      IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO,      /* GPIO_LPSR_11 PAD functional properties : */
+      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+                                                 Drive Strength Field: high driver
+                                                 Pull / Keep Select Field: Pull Disable
+                                                 Pull Up / Down Config. Field: Weak pull down
+                                                 Open Drain LPSR Field: Disabled
+                                                 Domain write protection: Both cores are allowed
+                                                 Domain write protection lock: Neither of DWP bits is locked */
 #endif
 }
 

@@ -471,9 +471,7 @@ void BOARD_BootClockRUN(void)
 
     /* Configure CSTRACE using SYS_PLL2_CLK - 660 MHz */
     rootCfg.mux = kCLOCK_CSTRACE_ClockRoot_MuxSysPll2Out;
-    rootCfg.div = 16;  //div 5 = 132 MHz
-    ////rootCfg.mux = kCLOCK_CSSYS_ClockRoot_MuxOscRc48MDiv2;
-    ////rootCfg.div = 1;	//1; div 2 = 24 MHz
+    rootCfg.div = 4;  //div 5 = 132 MHz
     CLOCK_SetRootClock(kCLOCK_Root_Cstrace, &rootCfg);
 
     /* Configure M4_SYSTICK using OSC_RC_48M_DIV2 */

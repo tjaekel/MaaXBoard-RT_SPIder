@@ -32,6 +32,7 @@ extern uint8_t USB_EnterLowpowerMode(void);
 #include <limits.h>				//ULONG_MAX
 
 #include "VCP_UART.h"
+#include "ITM_print.h"
 
 /*******************************************************************************
  * Definitions
@@ -709,6 +710,12 @@ void VCP_UART_putString(const char *s, EResultOut out)
 	if (out == HTTPD_OUT)
 	{
 		HTTP_PutOutBuffer(s, strlen(s));
+		return;
+	}
+
+	if (out == ITM_OUT)
+	{
+		ITM_PrintString(s);
 		return;
 	}
 }

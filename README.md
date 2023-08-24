@@ -28,19 +28,21 @@ web server, Python host access, TFTP, USB memory stick ...
   "maaxboard/" or "maaxboardg/" (100M vs. 1G, mDNS working)
   (WiFi is not enabled yet)
   web page to enter commands is up and running
+  access MCU via Network from host Python script works (find a demo Python script in folder "Python")
 * TFTP:
   transfer files to/from USB memory stick via TFTP
+* ITM_Print:
+  output debug messages to SWO Viewer in IDE
+* SPI with two GPIO SPI CS signals prepared (working),
+  just extend the SPI API calls (using a number for which CS to generate)
 
 ## Testing SPI
 connect J1 pin 19 and pin 21, use command "rawspi" in order to
 send a sequence of bytes.
 
 ## Coming up next
-* second SPI CS signal (a bus with two slaves connected)
 * SYS_CFG: have a persistent storage of system parameters,
   (e.g. SPI modes)
-* Web Server:
-  access from a Python script
 * add "Pico-C":
   my script engine to execute C-code scripts
 * optimization:
@@ -59,6 +61,10 @@ You can plug-in and remove without a command to release the USB Memory Stick
 
 When you use files, e.g. via "sdprint" or via TFTP - you have to specify the file name as:
 "1:/filename" (with the drive letter 1:/ in front)
+
+For ITM_Print (SWO Viewer) use: 960000000 [Hz] as Core Speed (or "Detect") and
+132000000 [Hz] for the SWO Trace Speed.
+Connect and start the SWO viewer: the command "test" will use it.
 
 ## Issues
 the USB-C VCP UART needs one key press to enable, to see something on this (main) UART

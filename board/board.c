@@ -37,7 +37,7 @@ void BOARD_InitDebugConsole(void)
 {
     uint32_t uartClkSrcFreq = BOARD_DebugConsoleSrcFreq();
 #if (defined(SERIAL_PORT_TYPE_SWO) && (SERIAL_PORT_TYPE_SWO > 0U))
-    DbgConsole_Init(1U, 6000000U, kSerialPort_Swo, 24000000);
+    DbgConsole_Init(1U, 132000000U, kSerialPort_Swo, SystemCoreClock);
 #else
     DbgConsole_Init(BOARD_DEBUG_UART_INSTANCE, BOARD_DEBUG_UART_BAUDRATE, BOARD_DEBUG_UART_TYPE, uartClkSrcFreq);
 #endif
