@@ -5,11 +5,18 @@
 My project with USB VCP command shell, SPI transactions,
 web server, Python host access, TFTP, USB memory stick ...
 
+## ATTENTION
+Debug UART is now LPUART6 - see the J1 header pins.
+Connect the MCU-LINK UART as Debug UART on J1, pin 16 and pin 18!
+
+SPI is now split into a SPI Master (LPSI4) and a SPI Slave (LPSPI2).
+This is alredy the "DualSPIder" approach: two SPI interfaces, one as master, one as slave!
+
 ## What is working?
 * USB VCP UART:
   connect with terminal, baudrate does not matter
 * Debug UART:
-  the Debug UART (LPUART1, via MCU-LINK) is used as well
+  the Debug UART (LPUAR6, via MCU-LINK) is used as well - ATT: ne:w LPUART6 is used
   (few debug logs)
 * Command Line Interpreter:
   enter commands via UART terminal, e.g.
@@ -37,8 +44,11 @@ web server, Python host access, TFTP, USB memory stick ...
   just extend the SPI API calls (using a number for which CS to generate)
 
 ## Testing SPI
-connect J1 pin 19 and pin 21, use command "rawspi" in order to
-send a sequence of bytes.
+In order to test SPI via "loopback" - connect these pins:
+J1, pin 21 to J1, pin 31
+J1, pin 23 to J1, pin 8
+J1, pin 24 to J1, pin 10
+This is a "loopback" and you should receive what you have sent.
 
 ## Coming up next
 * SYS_CFG: have a persistent storage of system parameters,
@@ -50,7 +60,7 @@ send a sequence of bytes.
 * WIFI is prepared but not yet working (files in project, but compile errors)
 
 ## Remarks
-The Debug UART (LPUART1, via MCU-LINK header), prints some logs,
+The Debug UART (LPUART6, via MCU-LINK header), prints some logs - ATT: changed to LPUART6!
 esp. when a USB Memory Stick is plugged-in or removed, ETH cable removed or connected...
 There is still a bit of code for the USB Memory Stick test, but it does
 not format the USB device anymore, neither it creates a new file.

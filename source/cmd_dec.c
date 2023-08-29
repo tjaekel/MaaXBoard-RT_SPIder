@@ -40,6 +40,7 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_spiclk(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_umdir(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_umprint(TCMD_DEC_Results *res, EResultOut out);
@@ -141,6 +142,12 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.help = (const char *)"rawspi <byte ...>",
 				.func = CMD_rawspi
 		},
+		{
+				.cmd = (const char *)"spiclk",
+				.help = (const char *)"spiclk <hz>",
+				.func = CMD_spiclk
+		},
+
 
 		//Chip specific
 
@@ -728,6 +735,14 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out)
   return CMD_DEC_OK;
 }
 
+ECMD_DEC_Status CMD_spiclk(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)out;
+
+	SPI_SetClock(res->val[0]);
+
+	return CMD_DEC_OK;
+}
 /* -------------------------------------------------------------------------- */
 
 extern int USBH_Available(void);
@@ -762,7 +777,7 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 
 //#ifdef SDRAM_TEST
 /* SDRAM test */
-uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM"))) = {0x11223344, 0x55667788, 0x99AABBCC};
+uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
 #define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
 //#endif
 

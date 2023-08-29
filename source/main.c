@@ -56,7 +56,8 @@ void APPTask(void *handle)
 {
     USB_DeviceApplicationInit();
 
-    SPI_setup();
+    SPI_setup(14000000);
+    /* ATT: max. is right now 12 MHz!, but 12000000 sets 8 MHz! */
 
 #if USB_DEVICE_CONFIG_USE_TASK
     if (s_cdcVcom.deviceHandle)

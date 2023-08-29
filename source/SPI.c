@@ -19,6 +19,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "SPI_slave.h"
+
 void SPI_SW_CS(int num, int state);
 
 /*******************************************************************************
@@ -36,11 +38,12 @@ void SPI_SW_CS(int num, int state);
 #define EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT     		(kLPSPI_Pcs0)				//other PCS do not work!
 #define EXAMPLE_LPSPI_MASTER_PCS_FOR_TRANSFER 		(kLPSPI_MasterPcs0)
 
-#define LPSPI_MASTER_CLK_FREQ (CLOCK_GetFreqFromObs(CCM_OBS_LPSPI1_CLK_ROOT))
+#define LPSPI_MASTER_CLK_FREQ 						(CLOCK_GetFreqFromObs(CCM_OBS_LPSPI4_CLK_ROOT))
 
-#define EXAMPLE_LPSPI_DEALY_COUNT 0xFFFFFU
-#define TRANSFER_SIZE     1920U     				/* Transfer dataSize */
-#define TRANSFER_BAUDRATE 1000000U 					/* Transfer bit rate - 1000k */
+#define EXAMPLE_LPSPI_DEALY_COUNT 					0xFFFFFU
+#define TRANSFER_SIZE     							1920U     				/* Transfer dataSize */
+/* faster as 12000000 is not possible! */
+#define TRANSFER_BAUDRATE 							12000000U 				/* Transfer bit rate - 10,000KHz */
 
 /*******************************************************************************
  * Prototypes
@@ -51,7 +54,9 @@ void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *hand
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+#ifndef DUAL_SPI
 AT_NONCACHEABLE_SECTION_INIT(uint8_t masterRxData[TRANSFER_SIZE]) = {0};
+#endif
 AT_NONCACHEABLE_SECTION_INIT(uint8_t masterTxData[TRANSFER_SIZE]) = {0};
 
 AT_NONCACHEABLE_SECTION_INIT(lpspi_master_edma_handle_t g_m_edma_handle) = {0};
@@ -81,10 +86,11 @@ void LPSPI_MasterUserCallback(LPSPI_Type *base, lpspi_master_edma_handle_t *hand
 
     SPI_SW_CS(0, 1);
     SPI_SW_CS(1, 1);
+    /* TODO: use a semaphore or event */
     isTransferCompleted = true;
 }
 
-void SPI_setup(void)
+void SPI_setup(uint32_t baudrate)
 {
     uint32_t srcClock_Hz;
     lpspi_master_config_t masterConfig;
@@ -116,7 +122,7 @@ void SPI_setup(void)
 
     /*Master config*/
     LPSPI_MasterGetDefaultConfig(&masterConfig);
-    masterConfig.baudRate = TRANSFER_BAUDRATE;
+    masterConfig.baudRate = baudrate;
     masterConfig.whichPcs = EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT;
 
     srcClock_Hz = LPSPI_MASTER_CLK_FREQ;
@@ -142,6 +148,10 @@ void SPI_setup(void)
 
     SPI_SW_CS(0, 1);
     SPI_SW_CS(1, 1);
+
+#ifdef DUAL_SPI
+    SPI_SlaveInit();
+#endif
 }
 
 int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len)
@@ -151,15 +161,26 @@ int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len)
 
     /*Start master transfer*/
     masterXfer.txData   = masterTxData;
+#ifndef DUAL_SPI
     masterXfer.rxData   = masterRxData;
+#else
+    masterXfer.rxData   = NULL;
+#endif
     masterXfer.dataSize = len;
     masterXfer.configFlags = EXAMPLE_LPSPI_MASTER_PCS_FOR_TRANSFER | kLPSPI_MasterByteSwap | kLPSPI_MasterPcsContinuous;
 
     isTransferCompleted = false;
+
+#ifdef DUAL_SPI
+    /* prepare SPI slave */
+    SPI_SlaveTransfer(len);
+#endif
+
     LPSPI_MasterTransferEDMA(EXAMPLE_LPSPI_MASTER_BASEADDR, &g_m_edma_handle, &masterXfer);
     SPI_SW_CS(0, 0);
     SPI_SW_CS(1, 0);
 
+#ifndef DUAL_SPI
     /* Wait until transfer completed */
     while (!isTransferCompleted)
     {
@@ -168,6 +189,18 @@ int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len)
     }
 
     memcpy(rx, masterRxData, len);
+#else
+    SPI_SlaveCompletion(rx, len);
+#endif
 
     return 1;
+}
+
+void SPI_SetClock(uint32_t baudrate)
+{
+	uint32_t srcClock_Hz;
+	lpspi_master_config_t masterConfig;
+
+	LPSPI_Deinit(EXAMPLE_LPSPI_MASTER_BASEADDR);
+	SPI_setup(baudrate);
 }
