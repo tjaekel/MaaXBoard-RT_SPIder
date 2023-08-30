@@ -454,14 +454,17 @@ void BOARD_InitPins(void) {
                                                  Domain write protection lock: Neither of DWP bits is locked */
 #endif
 
-  /* add and configure SPI2 on MaaxBoard-RT */
+  /* add and configure SPI2 on MaaxBoard-RT, as SPI Slave */
 #if DEBUG_CONSOLE_UART_INDEX == 6
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_AD_24_LPSPI2_SCK,           /* GPIO_AD_24 is configured as LPSPI2_SCK */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+#if 0
+  /* we do not need SPI Slacve PCS0 signal - it works with AUTOPCS */
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 is configured as LPSPI2_PCS0 */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+#endif
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 is configured as LPSPI2_SOUT */
       0U);                                    /* Software Input On Field: Input Path is determined by functionality */
@@ -478,6 +481,7 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+#if 0
   IOMUXC_SetPinConfig(
 	  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 PAD functional properties : */
       0x02U);                                 /* Slew Rate Field: Slow Slew Rate
@@ -487,6 +491,7 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+#endif
   IOMUXC_SetPinConfig(
 	  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 PAD functional properties : */
       0x02U);                                 /* Slew Rate Field: Slow Slew Rate

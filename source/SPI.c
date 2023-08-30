@@ -122,8 +122,13 @@ void SPI_setup(uint32_t baudrate)
 
     /*Master config*/
     LPSPI_MasterGetDefaultConfig(&masterConfig);
-    masterConfig.baudRate = baudrate;
-    masterConfig.whichPcs = EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT;
+
+    masterConfig.cpol       = kLPSPI_ClockPolarityActiveHigh;
+    masterConfig.cpha       = kLPSPI_ClockPhaseFirstEdge;
+    masterConfig.direction  = kLPSPI_LsbFirst;
+
+    masterConfig.baudRate 	= baudrate;
+    masterConfig.whichPcs 	= EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT;
 
     srcClock_Hz = LPSPI_MASTER_CLK_FREQ;
     LPSPI_MasterInit(EXAMPLE_LPSPI_MASTER_BASEADDR, &masterConfig, srcClock_Hz);
@@ -203,4 +208,9 @@ void SPI_SetClock(uint32_t baudrate)
 
 	LPSPI_Deinit(EXAMPLE_LPSPI_MASTER_BASEADDR);
 	SPI_setup(baudrate);
+}
+
+uint32_t SPI_GetClock(void)
+{
+	return LPSPI_GetBaudrate();
 }

@@ -882,6 +882,8 @@ uint32_t LPSPI_MasterSetBaudRate(LPSPI_Type *base,
                                  uint32_t srcClock_Hz,
                                  uint32_t *tcrPrescaleValue);
 
+uint32_t LPSPI_GetBaudrate(void);
+
 /*!
  * @brief Manually configures a specific LPSPI delay parameter (module must be disabled to
  *        change the delay values).

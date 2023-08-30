@@ -737,9 +737,15 @@ ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out)
 
 ECMD_DEC_Status CMD_spiclk(TCMD_DEC_Results *res, EResultOut out)
 {
-	(void)out;
+	uint32_t baudrate;
 
-	SPI_SetClock(res->val[0]);
+	if ( ! res->val[0])
+	{
+		baudrate = SPI_GetClock();
+		print_log(out, "SPI bitrate: %ld\r\n", baudrate);
+	}
+	else
+		SPI_SetClock(res->val[0]);
 
 	return CMD_DEC_OK;
 }

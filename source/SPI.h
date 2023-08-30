@@ -11,5 +11,6 @@
 void SPI_setup(uint32_t baudrate);
 int SPI_transaction(unsigned char *tx, unsigned char *rx, size_t len);
 void SPI_SetClock(uint32_t baudrate);
+uint32_t SPI_GetClock(void);
 
 #endif /* SPI_H_ */

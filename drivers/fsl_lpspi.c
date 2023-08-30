@@ -207,6 +207,8 @@ static lpspi_slave_isr_t s_lpspiSlaveIsr;
 /* @brief Dummy data for each instance. This data is used when user's tx buffer is NULL*/
 volatile uint8_t g_lpspiDummyData[ARRAY_SIZE(s_lpspiBases)] = {0};
 
+static uint32_t sCurrentBaudrate = 0;
+
 /**********************************************************************************************************************
  * Code
  *********************************************************************************************************************/
@@ -377,6 +379,10 @@ void LPSPI_SlaveInit(LPSPI_Type *base, const lpspi_slave_config_t *slaveConfig)
     base->CFGR1 = (base->CFGR1 & ~(LPSPI_CFGR1_OUTCFG_MASK | LPSPI_CFGR1_PINCFG_MASK)) |
                   LPSPI_CFGR1_OUTCFG(slaveConfig->dataOutConfig) | LPSPI_CFGR1_PINCFG(slaveConfig->pinCfg);
 
+    //XXXX: no need for PCS0 on SPI Slave - we use PCS polarity High as indication
+    if (slaveConfig->pcsActiveHighOrLow == kLPSPI_PcsActiveHigh)
+    	base->CFGR1 = base->CFGR1 | LPSPI_CFGR1_AUTOPCS(1);
+
     LPSPI_SetFifoWatermarks(base, (uint32_t)kLpspiDefaultTxWatermark, (uint32_t)kLpspiDefaultRxWatermark);
 
     base->TCR = LPSPI_TCR_CPOL(slaveConfig->cpol) | LPSPI_TCR_CPHA(slaveConfig->cpha) |
@@ -413,7 +419,7 @@ void LPSPI_SlaveGetDefaultConfig(lpspi_slave_config_t *slaveConfig)
     slaveConfig->cpha         = kLPSPI_ClockPhaseFirstEdge;     /*!< Clock phase. */
     slaveConfig->direction    = kLPSPI_MsbFirst;                /*!< MSB or LSB data shift direction. */
 
-    slaveConfig->whichPcs           = kLPSPI_Pcs0;         /*!< Desired Peripheral Chip Select (pcs) */
+    slaveConfig->whichPcs           = kLPSPI_Pcs0;         		/*!< Desired Peripheral Chip Select (pcs) */
     slaveConfig->pcsActiveHighOrLow = kLPSPI_PcsActiveLow; /*!< Desired PCS active high or low */
 
     slaveConfig->pinCfg        = kLPSPI_SdiInSdoOut;
@@ -582,7 +588,13 @@ uint32_t LPSPI_MasterSetBaudRate(LPSPI_Type *base,
     *tcrPrescaleValue = bestPrescaler;
 
     /* return the actual calculated baud rate */
+    sCurrentBaudrate = bestBaudrate;
     return bestBaudrate;
+}
+
+uint32_t LPSPI_GetBaudrate(void)
+{
+	return sCurrentBaudrate;
 }
 
 /*!

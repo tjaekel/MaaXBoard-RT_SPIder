@@ -47,8 +47,12 @@ This is alredy the "DualSPIder" approach: two SPI interfaces, one as master, one
 In order to test SPI via "loopback" - connect these pins:
 J1, pin 21 to J1, pin 31
 J1, pin 23 to J1, pin 8
-J1, pin 24 to J1, pin 10
 This is a "loopback" and you should receive what you have sent.
+
+## DualSPIder approach
+This project uses the DualSPIder approach:
+one SPI Master Tx (with SCLK, MOSI, PCSx) and a SPI Slave Rx (receiving "reflected" SLCK, and MISO,
+PCS0 is not needed due to AUTOPCS feature in MCU).
 
 ## Coming up next
 * SYS_CFG: have a persistent storage of system parameters,
