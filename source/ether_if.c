@@ -214,7 +214,7 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 	uint8_t tempArr[6] = configMAC_ADDR_100M;
 	uint8_t eth0_eth1 = 0;
 
-	// check which ethernet interface received event
+	// check which Ethernet interface received event
 	if (compareArrays(state_netif->hwaddr, tempArr, 6))
 	{
 		eth0_eth1 = 0;
@@ -267,7 +267,7 @@ static void cbETHNetIFStatus(struct netif *state_netif)
 }
 
 /*!
- * @brief Main body for Ethetnet 100Mb task
+ * @brief Main body for Ethernet 100Mb task
  */
 void sys_lock_tcpip_core(void);
 void sys_unlock_tcpip_core(void);
@@ -286,9 +286,15 @@ static void init_ENET_100mb()
 #endif /* FSL_FEATURE_SOC_LPC_ENET_COUNT */
 	};
 
+#ifdef USE_DHCP
 	IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
 	IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
 	IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
+#else
+	IP4_ADDR(&netif_ipaddr, 192U, 168U, 1U, 90U);
+	IP4_ADDR(&netif_netmask, 255U, 255U, 255U, 0U);
+	IP4_ADDR(&netif_gw, 192U, 168U, 1U, 1U);
+#endif
 
 	/* tcpip_init must be uncommented, if there is no wifi */
 	//tcpip_init(NULL, NULL);
@@ -327,14 +333,18 @@ static void init_ENET_100mb()
 		   {
 			   sys_lock_tcpip_core();
 			   netif_set_up(&netif_100m);
+#ifdef USE_DHCP
 			   dhcp_start(&netif_100m);
+#endif
 			   sys_unlock_tcpip_core();
 			   PRINTF("100Mb Link is coming up\r\n");
 		   }
 		   else
 		   {
 			   sys_lock_tcpip_core();
+#ifdef USE_DHCP
 			   dhcp_release_and_stop(&netif_100m);
+#endif
 			   netif_set_down(&netif_100m);
 			   sys_unlock_tcpip_core();
 			   PRINTF("100Mb Link is going down..\r\n");
@@ -346,7 +356,7 @@ static void init_ENET_100mb()
 }
 
 /*!
- * @brief Main body for Ethetnet 1Gb task
+ * @brief Main body for Ethernet 1Gb task
  */
 static void init_ENET_1g() // must be called after 100m
 {
@@ -370,9 +380,15 @@ static void init_ENET_1g() // must be called after 100m
 	EnableIRQ(ENET_1G_MAC0_Tx_Rx_1_IRQn);
 	EnableIRQ(ENET_1G_MAC0_Tx_Rx_2_IRQn);
 
+#ifdef USE_DHCP
 	IP4_ADDR(&netif_ipaddr, 0U, 0U, 0U, 0U);
 	IP4_ADDR(&netif_netmask, 0U, 0U, 0U, 0U);
 	IP4_ADDR(&netif_gw, 0U, 0U, 0U, 0U);
+#else
+	IP4_ADDR(&netif_ipaddr, 192U, 168U, 1U, 91U);
+	IP4_ADDR(&netif_netmask, 255U, 255U, 255U, 0U);
+	IP4_ADDR(&netif_gw, 192U, 168U, 1U, 1U);
+#endif
 
 	/* tcpip_init must be uncommented, if there is no wifi or ethernet100mb task*/
 	//tcpip_init(NULL, NULL);
@@ -410,14 +426,18 @@ static void init_ENET_1g() // must be called after 100m
 		   {
 			   sys_lock_tcpip_core();
 			   netif_set_up(&netif_1g);
+#ifdef USE_DHCP
 			   dhcp_start(&netif_1g);
+#endif
 			   sys_unlock_tcpip_core();
 			   PRINTF("1Gb Link is coming up\r\n");
 		   }
 		   else
 		   {
 			   sys_lock_tcpip_core();
+#ifdef USE_DHCP
 			   dhcp_release_and_stop(&netif_1g);
+#endif
 			   netif_set_down(&netif_1g);
 			   sys_unlock_tcpip_core();
 			   PRINTF("1Gb Link is going down..\r\n");

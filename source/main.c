@@ -15,6 +15,7 @@
 #include "board.h"
 #include "virtual_com.h"
 
+#include "SYS_config.h"
 #include "LED.h"
 #include "SPI.h"
 #include "GPIO.h"
@@ -90,6 +91,7 @@ void main(void)
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
 
+    CFG_Read();
     MEM_PoolInit();
     LED_Init();
     GPIO_Init();

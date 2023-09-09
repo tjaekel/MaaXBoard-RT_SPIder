@@ -54,6 +54,10 @@ This project uses the DualSPIder approach:
 one SPI Master Tx (with SCLK, MOSI, PCSx) and a SPI Slave Rx (receiving "reflected" SLCK, and MISO,
 PCS0 is not needed due to AUTOPCS feature in MCU).
 
+## Max. SPI SCLK speed
+The max. SCLK you can achieve is 45 MHz (without issues). The next higher, potentially LPSPI could support, is 66 MHz.
+But the waveform looks a bit ugly (SCLK is not periodic anymore, a long 8th bit pulse).
+
 ## Coming up next
 * SYS_CFG: have a persistent storage of system parameters,
   (e.g. SPI modes)

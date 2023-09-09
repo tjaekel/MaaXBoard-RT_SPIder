@@ -50,15 +50,16 @@ static void main_task(void *arg)
 #if 0
     http_server_enable_mdns(&netif_100m, MDNS_HOSTNAME);
     ////http_server_print_ip_cfg(&netif_100m);					//with DHCP - it is still zero
-#endif
 
-#if 0
     /* it works only with one interface, not both */
     http_server_enable_mdns(&netif_1g, MDNS_HOSTNAME_1G);
     ////http_server_print_ip_cfg(&netif_1g);
 #endif
 
+#ifdef USE_DHCP
+    /* seems to work just if DHCP has assigned IP address */
     http_server_enable_mdns(&netif_100m, MDNS_HOSTNAME, &netif_1g, MDNS_HOSTNAME_1G);
+#endif
 
     http_server_socket_init();
 

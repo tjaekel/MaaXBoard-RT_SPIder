@@ -10,6 +10,8 @@
 #include <task.h>
 
 #include "globals.h"
+#include "SYS_config.h"
+#include "SYS_error.h"
 #include "LED.h"
 #include "SPI.h"
 #include "GPIO.h"
@@ -21,6 +23,8 @@
 #include "cmd_dec.h"
 
 #include "ITM_print.h"
+
+#include "MEMORY_attributes.h"
 
 /* prototypes */
 ECMD_DEC_Status CMD_NotImplemented(TCMD_DEC_Results *res, EResultOut out);
@@ -35,6 +39,7 @@ ECMD_DEC_Status CMD_delay(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_led(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_sysinfo(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_syscfg(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
@@ -67,6 +72,11 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.cmd = (const char *)"syserr",
 				.help = (const char *)"display sys error [-d]",
 				.func = CMD_syserr
+		},
+		{
+				.cmd = (const char *)"syscfg",
+				.help = (const char *)"display sys config, set default [-d], write [-w]",
+				.func = CMD_syscfg
 		},
 		{
 				.cmd = (const char *)"tasks",
@@ -581,6 +591,26 @@ ECMD_DEC_Status CMD_help(TCMD_DEC_Results *res, EResultOut out)
 
 ECMD_DEC_Status CMD_syserr(TCMD_DEC_Results *res, EResultOut out)
 {
+  unsigned long serr;
+  if (res->opt)
+  {
+	if (strncmp(res->opt, "-d", 2) == 0)
+	{
+		(void)SYSERR_Get(out, 1);
+	}
+  }
+  else
+  {
+	  serr = SYSERR_Get(out, 0);
+	  print_log(out, "SYSERR: %08lx\r\n", serr);
+  }
+
+  return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_syscfg(TCMD_DEC_Results *res, EResultOut out)
+{
+  CFG_Print(out);
 
   return CMD_DEC_OK;
 }
@@ -787,7 +817,7 @@ uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
 #define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
 //#endif
 
-ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
+ITCM_CM7 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 {
 //#ifdef SDRAM_TEST
 	uint32_t *p = sdRAM;
@@ -801,7 +831,7 @@ ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 	}
 	print_log(UART_OUT, "\r\n");
 
-	/* let's check what if and how initialized outside out sdRAM */
+	/* let's check what if and how initialized outside of sdRAM */
 	p = &sdRAM[1024];
 	for (i = 0; i < 8; i++)
 	{
@@ -842,6 +872,44 @@ ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 	ITM_PrintChar('!');
 	print_log(ITM_OUT, "\r\nHi!\r\n");
 
+//#if GPIO_SPEED_TEST
+
+	__asm volatile ( "cpsid i" ::: "memory" );
+	__asm volatile ( "dsb" );
+	__asm volatile ( "isb" );
+	for (i = 0; i < 16; i++)
+	{
+		/* this results just in 6.6 MHz and not equal pulses! */
+		////GPIO_PortClear(GPIO8, 1U << 16U);
+		////GPIO_PortSet(GPIO8, 1U << 16U);
+
+		/* this is better: with regular pulses - 15 MHz */
+		////GPIO_PinWrite(GPIO2, 15, 0);
+		////GPIO_PinWrite(GPIO2, 15, 1);
+
+		/* fast GPIO: but also just 16 MHz */
+		////GPIO_PinWrite(CM7_GPIO2, 15, 0);
+		////GPIO_PinWrite(CM7_GPIO2, 15, 1);
+
+		////CM7_GPIO2->DR_TOGGLE = 0x8000;				//71 MHz, but not all pulses, not periodic! - scope issue?
+		CM7_GPIO2->DR_CLEAR = 0x8000;					//100..125 MHz, short low pulses, longer high pulses - scope issue?
+		__NOP();
+		__NOP();
+		__NOP();
+		CM7_GPIO2->DR_SET = 0x8000;
+		__NOP();										//if too fast: works only once - scope issue?
+		/* with these 4 noops - it looks good: 83 MHz and symmetrical pulses, 50% duty cycle */
+
+		/* just 6 MHz */
+		//GPIO_PinWrite(GPIO8, 15, 0);
+		//GPIO_PinWrite(GPIO8, 15, 1);
+
+		////GPIO_PinWrite(GPIO9, 30, 0);
+		////GPIO_PinWrite(GPIO9, 30, 1);
+	}
+	 __asm volatile ( "cpsie i" ::: "memory" );
+
+//#endif
 	return CMD_DEC_OK;
 }
 

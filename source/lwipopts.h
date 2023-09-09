@@ -409,12 +409,12 @@ u32_t lwip_rand(void);
 /**
  * LWIP_STATS==1: Enable statistics collection in lwip_stats.
  */
-#define LWIP_STATS 1
+#define LWIP_STATS 						0	//1
 
 /**
  * LWIP_STATS_DISPLAY==1: Compile in the statistics output functions.
  */
-#define LWIP_STATS_DISPLAY 1
+#define LWIP_STATS_DISPLAY 				0	//1
 
 /*
    ----------------------------------

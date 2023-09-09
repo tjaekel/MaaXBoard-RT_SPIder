@@ -418,9 +418,16 @@ void BOARD_InitPins(void) {
   /* Initialize GPIO functionality on IOMUXC_GPIO_AD_31_GPIO9_IO30 */
   GPIO_PinInit(GPIO9, 30U, &USER_GPIO_config);
 
+#if 1
   IOMUXC_SetPinMux(
 	  IOMUXC_GPIO_AD_31_GPIO9_IO30,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
       0x00U);
+#else
+  /* does not work like GPIO - FlexIO is a shift register logic */
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_AD_31_FLEXIO2_D31,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
+      0x00U);
+#endif
 
 #ifndef SPI_NSS_HW
   //IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16 as SPI_CS0
@@ -510,6 +517,28 @@ void BOARD_InitPins(void) {
                                                  Open Drain Field: Disabled
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
+#endif
+
+  /* configure GPIOs */
+#if 1
+  IOMUXC_GPR->GPR40 = 0x00008000;				/* select FastGPIO, CM7_GPIO2, bit 15 */
+
+  GPIO_PinInit(CM7_GPIO2, 15U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_EMC_B2_05_GPIO_MUX2_IO15,     /* configured as GPIO */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+	  IOMUXC_GPIO_EMC_B2_05_GPIO_MUX2_IO15,
+	  0x03U);									/* fast slew rate, high drive strength */
+#else
+  /* as normal GPIO */
+  GPIO_PinInit(GPIO8, 15U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_EMC_B2_05_GPIO8_IO15,     	/* configured as GPIO */
+      0x02U);
 #endif
 }
 

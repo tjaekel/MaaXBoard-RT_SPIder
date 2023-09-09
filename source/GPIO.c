@@ -45,8 +45,12 @@ void SPI_SW_CS(int num, int state)
 
 void GPIO_Set(int num, int state)
 {
+#if 0
 	if (state)
 		GPIO_PortSet(GPIO9, 1U << 30U);
 	else
 		GPIO_PortClear(GPIO9, 1U << 30U);
+#else
+	GPIO_PinWrite(GPIO9, 30, state);
+#endif
 }

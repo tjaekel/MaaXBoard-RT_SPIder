@@ -8,6 +8,8 @@
 
 #include "fsl_gpio.h"
 
+#include "MEMORY_attributes.h"
+
 /* Component ID definition, used by tools. */
 #ifndef FSL_COMPONENT_ID
 #define FSL_COMPONENT_ID "platform.drivers.igpio"
@@ -112,7 +114,7 @@ void GPIO_PinInit(GPIO_Type *base, uint32_t pin, const gpio_pin_config_t *Config
  *        - 0: corresponding pin output low-logic level.
  *        - 1: corresponding pin output high-logic level.
  */
-void GPIO_PinWrite(GPIO_Type *base, uint32_t pin, uint8_t output)
+ITCM_CM7 void ITCM_CM7 GPIO_PinWrite(GPIO_Type *base, uint32_t pin, uint8_t output)
 {
     assert(pin < 32U);
     if (output == 0U)

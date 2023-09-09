@@ -122,10 +122,10 @@ int SPI_SlaveInit(void)
     /*Slave config*/
     LPSPI_SlaveGetDefaultConfig(&slaveConfig);
 
-    //XXXX:
-    slaveConfig.cpha         = kLPSPI_ClockPhaseSecondEdge;     /*!< Clock phase. */
-    slaveConfig.direction    = kLPSPI_LsbFirst;                /*!< MSB or LSB data shift direction. */
-    slaveConfig.pcsActiveHighOrLow = kLPSPI_PcsActiveHigh;
+    //XXXX: we configure AUTOPCS on Slave Rx:
+    slaveConfig.cpha         = kLPSPI_ClockPhaseSecondEdge;    	/* Clock phase. */
+    slaveConfig.direction    = kLPSPI_LsbFirst;                	/* MSB or LSB data shift direction. */
+    slaveConfig.pcsActiveHighOrLow = kLPSPI_PcsActiveHigh;		/* our indication to set AUTOPCS */
 
     slaveConfig.whichPcs = EXAMPLE_LPSPI_SLAVE_PCS_FOR_INIT;
 
