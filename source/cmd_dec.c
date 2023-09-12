@@ -20,6 +20,7 @@
 #include "MEM_Pool.h"
 #include "VCP_UART.h"
 #include "UDP.h"
+#include "QSPI_sw.h"
 #include "cmd_dec.h"
 
 #include "ITM_print.h"
@@ -811,15 +812,15 @@ ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out)
 	return CMD_DEC_OK;
 }
 
-//#ifdef SDRAM_TEST
+#ifdef SDRAM_TEST
 /* SDRAM test */
 uint32_t sdRAM[1024] __attribute__((section(".data.$BOARD_SDRAM")));
 #define SDRAM_SIZE_WORDS	(0x02000000 / sizeof(uint32_t))
-//#endif
+#endif
 
 ITCM_CM7 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 {
-//#ifdef SDRAM_TEST
+#ifdef SDRAM_TEST
 	uint32_t *p = sdRAM;
 	int i, j;
 
@@ -866,13 +867,13 @@ ITCM_CM7 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 
 	*p = 0x12345678;
 	print_log(UART_OUT, "*D: SDRAM loc: %lx = %lx\r\n", p, *p);
-//#endif
+#endif
 
 	ITM_PrintString("hello from SWO\r\n");
 	ITM_PrintChar('!');
 	print_log(ITM_OUT, "\r\nHi!\r\n");
 
-//#if GPIO_SPEED_TEST
+#if GPIO_SPEED_TEST
 
 	__asm volatile ( "cpsid i" ::: "memory" );
 	__asm volatile ( "dsb" );
@@ -907,9 +908,12 @@ ITCM_CM7 ECMD_DEC_Status CMD_test(TCMD_DEC_Results *res, EResultOut out)
 		////GPIO_PinWrite(GPIO9, 30, 0);
 		////GPIO_PinWrite(GPIO9, 30, 1);
 	}
-	 __asm volatile ( "cpsie i" ::: "memory" );
+	__asm volatile ( "cpsie i" ::: "memory" );
 
-//#endif
+#endif
+
+	QSPI_Test();
+
 	return CMD_DEC_OK;
 }
 

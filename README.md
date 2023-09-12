@@ -42,6 +42,7 @@ This is alredy the "DualSPIder" approach: two SPI interfaces, one as master, one
   output debug messages to SWO Viewer in IDE
 * SPI with two GPIO SPI CS signals prepared (working),
   just extend the SPI API calls (using a number for which CS to generate)
+* QSPI, 40 MHz based on "FastGPIO"
 
 ## Testing SPI
 In order to test SPI via "loopback" - connect these pins:
@@ -57,6 +58,11 @@ PCS0 is not needed due to AUTOPCS feature in MCU).
 ## Max. SPI SCLK speed
 The max. SCLK you can achieve is 45 MHz (without issues). The next higher, potentially LPSPI could support, is 66 MHz.
 But the waveform looks a bit ugly (SCLK is not periodic anymore, a long 8th bit pulse).
+
+## QSPI
+I need a QSPI Master for testing: there is now a QSPI implementation, using "FastGPIO" and available header pins
+(a FLEXSPI is not possible due to missing signals on header).
+It works: with 41 MHz (potentially 60 MHz as max. speed possible)
 
 ## Coming up next
 * SYS_CFG: have a persistent storage of system parameters,

@@ -22,7 +22,7 @@
  ******************************************************************************/
 #define	VERSION_INFO	"2.0"
 
-/* Freertos task can be enabled by setting 1, disabled by setting 0 */
+/* FreeS task can be enabled by setting 1, disabled by setting 0 */
 #define WIFI_EN			0		//1 - TODO: does not work yet
 #define ETH100MB_EN		1
 #define ETH1GB_EN		1

@@ -282,7 +282,6 @@ void BOARD_BootClockRUN(void)
 {
 #define SPI_DIVIDER		4			/* max: 5 = 35.7 MHz, 4 = 45.5 MHz, 3 = 55.6 MHz, 2 and 1 = FAIL! */
 									/* min:               4 = 4 KHz                                   */
-									/* higher SCLK speed looks strange! So, 45.455 MHz is the max.    */
 
     clock_root_config_t rootCfg = {0};
 
@@ -515,10 +514,10 @@ void BOARD_BootClockRUN(void)
     CLOCK_SetRootClock(kCLOCK_Root_Flexio1, &rootCfg);
 
     /* Configure FLEXIO2 using OSC_RC_48M_DIV2 */
-    rootCfg.mux = kCLOCK_FLEXIO2_ClockRoot_MuxOscRc48MDiv2;
-    rootCfg.div = 1;
-    ////rootCfg.mux = kCLOCK_FLEXIO2_ClockRoot_MuxSysPll2Out;
-    ////rootCfg.div = 4;
+    ////rootCfg.mux = kCLOCK_FLEXIO2_ClockRoot_MuxOscRc48MDiv2;
+    ////rootCfg.div = 1;
+    rootCfg.mux = kCLOCK_FLEXIO2_ClockRoot_MuxSysPll2Out;
+    rootCfg.div = 4;
     CLOCK_SetRootClock(kCLOCK_Root_Flexio2, &rootCfg);
 
     /* Configure GPT1 using OSC_RC_48M_DIV2 */
@@ -675,13 +674,14 @@ void BOARD_BootClockRUN(void)
     rootCfg.div = 1;
     CLOCK_SetRootClock(kCLOCK_Root_Lpspi1, &rootCfg);
 
-    //XXXX:
     /* Configure LPSPI2 using OSC_RC_48M_DIV2 */
     ////rootCfg.mux = kCLOCK_LPSPI2_ClockRoot_MuxOscRc48MDiv2;
     ////rootCfg.div = 1;
-    /* 135 MHz is max. LPSPIx_CLK_ROOT */
+    ////rootCfg.mux = kCLOCK_LPSPI2_ClockRoot_MuxSysPll2Out;
+    ////rootCfg.div = 22;
+    /* set the same as SPI4 ! */
     rootCfg.mux = kCLOCK_LPSPI2_ClockRoot_MuxSysPll2Out;
-    rootCfg.div = SPI_DIVIDER;		/* with 4 = 132 MHz */
+    rootCfg.div = SPI_DIVIDER;
     CLOCK_SetRootClock(kCLOCK_Root_Lpspi2, &rootCfg);
 
     /* Configure LPSPI3 using OSC_RC_48M_DIV2 */
@@ -692,6 +692,9 @@ void BOARD_BootClockRUN(void)
     /* Configure LPSPI4 using OSC_RC_48M_DIV2 */
     ////rootCfg.mux = kCLOCK_LPSPI4_ClockRoot_MuxOscRc48MDiv2;
     ////rootCfg.div = 1;
+    ////rootCfg.mux = kCLOCK_LPSPI4_ClockRoot_MuxSysPll2Out;
+    ////rootCfg.div = 22;
+    /* above" no difference: max. is 12 MHz for SPI */
     rootCfg.mux = kCLOCK_LPSPI4_ClockRoot_MuxSysPll2Out;
     rootCfg.div = SPI_DIVIDER;
     CLOCK_SetRootClock(kCLOCK_Root_Lpspi4, &rootCfg);

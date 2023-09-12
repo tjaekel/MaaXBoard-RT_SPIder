@@ -540,6 +540,64 @@ void BOARD_InitPins(void) {
 	  IOMUXC_GPIO_EMC_B2_05_GPIO8_IO15,     	/* configured as GPIO */
       0x02U);
 #endif
+
+  /* configure LPSPI2 as FastGPIO pins - for SW QSPI master */
+  IOMUXC_GPR->GPR43 = 0x00000F84;				/* select FastGPIO, CM7_GPIO3, bits 23, 24, 25, 26, 27, 18 */
+
+  GPIO_PinInit(CM7_GPIO3, 23U, &USER_GPIO_config);
+  GPIO_PinInit(CM7_GPIO3, 24U, &USER_GPIO_config);
+  GPIO_PinInit(CM7_GPIO3, 25U, &USER_GPIO_config);
+  GPIO_PinInit(CM7_GPIO3, 26U, &USER_GPIO_config);
+  GPIO_PinInit(CM7_GPIO3, 27U, &USER_GPIO_config);
+  GPIO_PinInit(CM7_GPIO3, 18U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_24_GPIO_MUX3_IO23,     /* configured as GPIO - SCLK */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_24_GPIO_MUX3_IO23,
+	  0x03U);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_25_GPIO_MUX3_IO24,     /* configured as GPIO - PCS0*/
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_25_GPIO_MUX3_IO24,
+	  0x03U);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_26_GPIO_MUX3_IO25,     /* configured as GPIO - D0 */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_26_GPIO_MUX3_IO25,
+	  0x03U);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_27_GPIO_MUX3_IO26,     /* configured as GPIO - D1 */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_27_GPIO_MUX3_IO26,
+	  0x03U);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_28_GPIO_MUX3_IO27,     /* configured as GPIO - D2 */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_28_GPIO_MUX3_IO27,
+  	  0x03U);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_19_GPIO_MUX3_IO18,     /* configured as GPIO - D3 */
+      0x0U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_19_GPIO_MUX3_IO18,
+	  0x03U);
 }
 
 
