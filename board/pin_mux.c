@@ -544,12 +544,15 @@ void BOARD_InitPins(void) {
   /* configure LPSPI2 as FastGPIO pins - for SW QSPI master */
   IOMUXC_GPR->GPR43 = 0x00000F84;				/* select FastGPIO, CM7_GPIO3, bits 23, 24, 25, 26, 27, 18 */
 
+  GPIO_PinInit(CM7_GPIO3, 24U, &USER_GPIO_config);		//PCS is always output and driven
+
+  USER_GPIO_config.direction = kGPIO_DigitalInput;		//all other are input for now, we change direction on transaction
   GPIO_PinInit(CM7_GPIO3, 23U, &USER_GPIO_config);
-  GPIO_PinInit(CM7_GPIO3, 24U, &USER_GPIO_config);
   GPIO_PinInit(CM7_GPIO3, 25U, &USER_GPIO_config);
   GPIO_PinInit(CM7_GPIO3, 26U, &USER_GPIO_config);
   GPIO_PinInit(CM7_GPIO3, 27U, &USER_GPIO_config);
   GPIO_PinInit(CM7_GPIO3, 18U, &USER_GPIO_config);
+  /* we could also clear the CM7_GPIO3->GDIR register bits */
 
   IOMUXC_SetPinMux(
 		  IOMUXC_GPIO_AD_24_GPIO_MUX3_IO23,     /* configured as GPIO - SCLK */

@@ -107,9 +107,6 @@ ITCM_CM7 void QSPI_SendWrite(uint8_t *buf, size_t numBytes)
 	__asm volatile ( "dsb" );
 	__asm volatile ( "isb" );
 
-	/* Set Direction of QSPI D0..D3 as output */
-
-
 	/* 2. Set initial D0..D1 - PCS still high, SCLK starting low */
 	b = *buf++;
 	/* TODO: we could handle 3 bits at once */
@@ -120,13 +117,17 @@ ITCM_CM7 void QSPI_SendWrite(uint8_t *buf, size_t numBytes)
 
 	w |= 1 << QSPI_PCSbit;
 	CM7_GPIO3->DR = w;
-	////__NOP();
+	/* Set Direction of QSPI SCLK, D0..D3 as output */
+	CM7_GPIO3->GDIR = QSPI_DIRmaskOut;
+
+	__NOP();
 
 	/* Set and keep PCS low */
 	w &= ~(1 << QSPI_PCSbit);
 	CM7_GPIO3->DR = w;
 
 	NOP_DELAY;
+	NOP_DELAY3;
 
 	w |= 1 << QSPI_SCLKbit;
 	CM7_GPIO3->DR = w;
@@ -143,11 +144,13 @@ ITCM_CM7 void QSPI_SendWrite(uint8_t *buf, size_t numBytes)
 
 	/* wait half a clock period with SCLK low */
 	NOP_DELAY;
+	NOP_DELAY3;
 
 	/* SCLK high */
 	w |= 1 << QSPI_SCLKbit;
 	CM7_GPIO3->DR = w;
 
+	NOP_DELAY3;
 	NOP_DELAY3;
 	numBytes--;
 
@@ -162,11 +165,13 @@ ITCM_CM7 void QSPI_SendWrite(uint8_t *buf, size_t numBytes)
 		CM7_GPIO3->DR = w;
 
 		NOP_DELAY;
+		NOP_DELAY3;
 
 		w |= 1 << QSPI_SCLKbit;
 		CM7_GPIO3->DR = w;
 
 		NOP_DELAY2;
+		NOP_DELAY3;
 
 		w  = (b & 0x01) << (QSPI_D0bit - 0);
 		w |= (b & 0x02) << (QSPI_D1bit - 1);
@@ -175,18 +180,21 @@ ITCM_CM7 void QSPI_SendWrite(uint8_t *buf, size_t numBytes)
 		CM7_GPIO3->DR = w;
 
 		NOP_DELAY;
+		NOP_DELAY3;
 
 		w |= 1 << QSPI_SCLKbit;
 		CM7_GPIO3->DR = w;
 
 		NOP_DELAY2b;
+		NOP_DELAY3;
 	}
 
 	/* Set PCS high */
 	w |= 1 << QSPI_PCSbit;
 	CM7_GPIO3->DR = w;
 
-	/* change D0..D1 direction to input (tri-state) */
+	/* change SCLK, D0..D1 direction to input (tri-state), but PCS remains active out */
+	CM7_GPIO3->GDIR = QSPI_DIRmaskIn;
 
 	__asm volatile ( "cpsie i" ::: "memory" );
 }
