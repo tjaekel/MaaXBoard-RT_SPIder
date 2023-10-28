@@ -214,7 +214,7 @@ int USBH_Init(void)
 {
     USB_HostApplicationInit();
 
-    if (xTaskCreate(USB_HostTask, "USBH task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 3, NULL) != pdPASS)
+    if (xTaskCreate(USB_HostTask, "USBH task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, 4, NULL) != pdPASS)
     {
         usb_echo("create host task error\r\n");
     }

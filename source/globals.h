@@ -1,8 +1,8 @@
 /*
  * globals.h
  *
- *  Created on: May 27, 2021
- *      Author: gulziibayar
+ *  Created on: May 27, 2023
+ *      Author: tjaekel
  */
 
 #ifndef GLOBALS_H_
@@ -20,7 +20,7 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define	VERSION_INFO	"2.0"
+#define	VERSION_INFO	"2.1"
 
 /* FreeS task can be enabled by setting 1, disabled by setting 0 */
 #define WIFI_EN			0		//1 - TODO: does not work yet
@@ -137,7 +137,7 @@ struct t_user_wifi_command
 #define WIFI_RDY			(1UL<<2UL)
 #define ETH_100m_RDY		(1UL<<3UL)
 
-extern uint8_t shared_buff[2048];
+////extern uint8_t shared_buff[2048];
 
 // ipv4 type for storing ip address
 typedef struct

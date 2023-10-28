@@ -27,10 +27,10 @@ void SPI_SW_CS(int num, int state);
  * Definitions
  ******************************************************************************/
 /* Master related */
-#define EXAMPLE_LPSPI_MASTER_BASEADDR              	(LPSPI4)					//was: (LPSPI1) - MaaXBoard has LPSPI4
+#define EXAMPLE_LPSPI_MASTER_BASEADDR              	(LPSPI2)					//was: (LPSPI1) - MaaXBoard has LPSPI4
 #define EXAMPLE_LPSPI_MASTER_DMA_MUX_BASE          	(DMAMUX0)
-#define EXAMPLE_LPSPI_MASTER_DMA_RX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI4Rx		//was: kDmaRequestMuxLPSPI1Rx
-#define EXAMPLE_LPSPI_MASTER_DMA_TX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI4Tx		//was: kDmaRequestMuxLPSPI1Tx
+#define EXAMPLE_LPSPI_MASTER_DMA_RX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI2Rx		//was: kDmaRequestMuxLPSPI1Rx
+#define EXAMPLE_LPSPI_MASTER_DMA_TX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI2Tx		//was: kDmaRequestMuxLPSPI1Tx
 #define EXAMPLE_LPSPI_MASTER_DMA_BASE              	(DMA0)
 #define EXAMPLE_LPSPI_MASTER_DMA_RX_CHANNEL        	0U
 #define EXAMPLE_LPSPI_MASTER_DMA_TX_CHANNEL        	1U
@@ -38,12 +38,12 @@ void SPI_SW_CS(int num, int state);
 #define EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT     		(kLPSPI_Pcs0)				//other PCS do not work!
 #define EXAMPLE_LPSPI_MASTER_PCS_FOR_TRANSFER 		(kLPSPI_MasterPcs0)
 
-#define LPSPI_MASTER_CLK_FREQ 						(CLOCK_GetFreqFromObs(CCM_OBS_LPSPI4_CLK_ROOT))
+#define LPSPI_MASTER_CLK_FREQ 						(CLOCK_GetFreqFromObs(CCM_OBS_LPSPI2_CLK_ROOT))
 
 #define EXAMPLE_LPSPI_DEALY_COUNT 					0xFFFFFU
 #define TRANSFER_SIZE     							1920U     				/* Transfer dataSize */
 /* faster as 12000000 is not possible! */
-#define TRANSFER_BAUDRATE 							12000000U 				/* Transfer bit rate - 10,000KHz */
+////#define TRANSFER_BAUDRATE 							12000000U 				/* Transfer bit rate - 10,000KHz */
 
 /*******************************************************************************
  * Prototypes
@@ -129,6 +129,10 @@ void SPI_setup(uint32_t baudrate)
 
     masterConfig.baudRate 	= baudrate;
     masterConfig.whichPcs 	= EXAMPLE_LPSPI_MASTER_PCS_FOR_INIT;
+
+#ifndef DUAL_SPI
+    masterConfig.enableInputDelay = true;
+#endif
 
     srcClock_Hz = LPSPI_MASTER_CLK_FREQ;
     LPSPI_MasterInit(EXAMPLE_LPSPI_MASTER_BASEADDR, &masterConfig, srcClock_Hz);

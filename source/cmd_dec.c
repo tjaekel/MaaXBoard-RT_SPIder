@@ -44,6 +44,8 @@ ECMD_DEC_Status CMD_syscfg(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_ipaddr(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_ggpio(TCMD_DEC_Results *res, EResultOut out);
+ECMD_DEC_Status CMD_res(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_rawspi(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_spiclk(TCMD_DEC_Results *res, EResultOut out);
@@ -57,6 +59,8 @@ ECMD_DEC_Status CMD_udpip(TCMD_DEC_Results *res, EResultOut out);
 ECMD_DEC_Status CMD_udptest(TCMD_DEC_Results *res, EResultOut out);
 
 ECMD_DEC_Status CMD_tasks(TCMD_DEC_Results *res, EResultOut out);
+
+ECMD_DEC_Status CMD_cspi(TCMD_DEC_Results *res, EResultOut out);
 
 const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		{
@@ -115,6 +119,16 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 				.func = CMD_pgpio
 		},
 		{
+				.cmd = (const char *)"ggpio",
+				.help = (const char *)"get GPIO [num]",
+				.func = CMD_ggpio
+		},
+		{
+				.cmd = (const char *)"res",
+				.help = (const char *)"set reset signal [0|1] [0|1]",
+				.func = CMD_res
+		},
+		{
 				.cmd = (const char *)"fwreset",
 				.help = (const char *)"fwreset reboots FW",
 				.func = CMD_fwreset
@@ -148,6 +162,11 @@ const TCMD_DEC_Command Commands[] /*FASTRUN*/ = {
 		},
 
 		//SPI
+		{
+				.cmd = (const char *)"cspi",
+				.help = (const char *)"cspi [0|1|2]",
+				.func = CMD_cspi
+		},
 		{
 				.cmd = (const char *)"rawspi",
 				.help = (const char *)"rawspi <byte ...>",
@@ -719,6 +738,18 @@ ECMD_DEC_Status CMD_pgpio(TCMD_DEC_Results *res, EResultOut out)
   return CMD_DEC_OK;
 }
 
+ECMD_DEC_Status CMD_ggpio(TCMD_DEC_Results *res, EResultOut out)
+{
+  (void)out;
+  uint32_t val;
+
+  val = GPIO_Get(res->val[0]);
+  print_log(out, "GPIO: %08lx\r\n", val);
+
+  return CMD_DEC_OK;
+}
+
+
 ECMD_DEC_Status CMD_fwreset(TCMD_DEC_Results *res, EResultOut out) {
   (void)res;
   (void)out;
@@ -992,4 +1023,45 @@ ECMD_DEC_Status CMD_tasks(TCMD_DEC_Results *res, EResultOut out)
 	}
 	else
 		return CMD_DEC_OOMEM;
+}
+
+ECMD_DEC_Status CMD_cspi(TCMD_DEC_Results *res, EResultOut out)
+{
+	/* configure SPI: 0 - DualSPI, 1 = SW_QSPI, 2 = FLEXIO2_QSPI */
+	(void)out;
+
+	switch (res->val[0])
+	{
+			 /* SW_QSPI */
+	case 1 : BOARD_InitSWQSPIPins();
+			 break;
+	case 2 : /* FLEXIO2_QSPI */
+			 break;
+	default : /* DualSPI */
+			  BOARD_InitDualSPIPins();
+	}
+
+	return CMD_DEC_OK;
+}
+
+ECMD_DEC_Status CMD_res(TCMD_DEC_Results *res, EResultOut out)
+{
+	(void)out;
+
+	if (res->val[0] == 0)
+	{
+		if (res->val[1])
+			CM7_GPIO3->DR_SET = 0x00000001;			/* bit 0 */
+		else
+			CM7_GPIO3->DR_CLEAR = 0x00000001;		/* bit 0 */
+	}
+	if (res->val[0] == 1)
+	{
+		if (res->val[1])
+			CM7_GPIO3->DR_SET = 0x00000040;			/* bit 6 */
+		else
+			CM7_GPIO3->DR_CLEAR = 0x00000040;		/* bit 6 */
+	}
+
+	return CMD_DEC_OK;
 }

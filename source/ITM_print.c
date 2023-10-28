@@ -18,5 +18,10 @@ void ITM_PrintChar(unsigned char chr)
 
 void ITM_PrintString(const char *s)
 {
+#if 0
 	_write(1, s, strlen(s));
+#else
+	while (*s)
+		ITM_SendChar((uint32_t)*s++);
+#endif
 }

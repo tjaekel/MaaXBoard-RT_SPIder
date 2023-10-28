@@ -34,17 +34,17 @@
  */
 
 /* Slave related */
-#define EXAMPLE_LPSPI_SLAVE_BASEADDR              	(LPSPI2)
+#define EXAMPLE_LPSPI_SLAVE_BASEADDR              	(LPSPI4)
 #define EXAMPLE_LPSPI_SLAVE_DMA_MUX_BASE          	(DMAMUX0)
-#define EXAMPLE_LPSPI_SLAVE_DMA_RX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI2Rx
-#define EXAMPLE_LPSPI_SLAVE_DMA_TX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI2Tx
+#define EXAMPLE_LPSPI_SLAVE_DMA_RX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI4Rx
+#define EXAMPLE_LPSPI_SLAVE_DMA_TX_REQUEST_SOURCE 	kDmaRequestMuxLPSPI4Tx
 #define EXAMPLE_LPSPI_SLAVE_DMA_BASE              	(DMA0)
 #define EXAMPLE_LPSPI_SLAVE_DMA_RX_CHANNEL        	2U
 #define EXAMPLE_LPSPI_SLAVE_DMA_TX_CHANNEL        	3U
 
 #define EXAMPLE_LPSPI_SLAVE_PCS_FOR_INIT     		(kLPSPI_Pcs0)
 #define EXAMPLE_LPSPI_SLAVE_PCS_FOR_TRANSFER 		(kLPSPI_SlavePcs0)
-#define TRANSFER_SIZE 								16	//64U /* Transfer dataSize */
+#define TRANSFER_SIZE 								1920U /* Transfer dataSize */
 
 /*******************************************************************************
  * Prototypes
@@ -123,8 +123,9 @@ int SPI_SlaveInit(void)
     LPSPI_SlaveGetDefaultConfig(&slaveConfig);
 
     //XXXX: we configure AUTOPCS on Slave Rx:
-    slaveConfig.cpha         = kLPSPI_ClockPhaseSecondEdge;    	/* Clock phase. */
-    slaveConfig.direction    = kLPSPI_LsbFirst;                	/* MSB or LSB data shift direction. */
+    slaveConfig.cpol         = kLPSPI_ClockPolarityActiveHigh;
+    slaveConfig.cpha         = kLPSPI_ClockPhaseFirstEdge;    	/* Clock phase */
+    slaveConfig.direction    = kLPSPI_LsbFirst;                	/* MSB or LSB data shift direction */
     slaveConfig.pcsActiveHighOrLow = kLPSPI_PcsActiveHigh;		/* our indication to set AUTOPCS */
 
     slaveConfig.whichPcs = EXAMPLE_LPSPI_SLAVE_PCS_FOR_INIT;

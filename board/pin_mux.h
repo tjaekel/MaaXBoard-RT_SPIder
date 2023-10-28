@@ -212,7 +212,9 @@ void BOARD_InitBootPins(void);
  * @brief Configures pin routing and optionally pin electrical features.
  *
  */
-void BOARD_InitPins(void);                    /* Function assigned for the Cortex-M7F */
+void BOARD_InitPins(void);                    	/* Function assigned for the Cortex-M7F */
+void BOARD_InitSWQSPIPins(void);				/* configure SW_QSPI GPIO pins */
+void BOARD_InitDualSPIPins(void);				/* configure DualSPI pins */
 
 /* GPIO_AD_29 (coord M17), DSI_EN */
 /* Routed pin properties */

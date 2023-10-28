@@ -329,17 +329,21 @@ void LPSPI_MasterGetDefaultConfig(lpspi_master_config_t *masterConfig)
     assert(masterConfig != NULL);
 
     /* Initializes the configure structure to zero. */
-    (void)memset(masterConfig, 0, sizeof(*masterConfig));
+    ////(void)memset(masterConfig, 0, sizeof(*masterConfig));
+    (void)memset(masterConfig, 0, sizeof(lpspi_master_config_t));
 
-    masterConfig->baudRate     = 500000;
+    masterConfig->baudRate     = 1000000;
     masterConfig->bitsPerFrame = 8;
     masterConfig->cpol         = kLPSPI_ClockPolarityActiveHigh;
     masterConfig->cpha         = kLPSPI_ClockPhaseFirstEdge;
     masterConfig->direction    = kLPSPI_MsbFirst;
 
+#if 1
+    /* we need this, otherwise too short gap between SCLK blocks and no time to toggle GPIO as PCS signal */
     masterConfig->pcsToSckDelayInNanoSec        = 1000000000U / masterConfig->baudRate * 2U;
     masterConfig->lastSckToPcsDelayInNanoSec    = 1000000000U / masterConfig->baudRate * 2U;
     masterConfig->betweenTransferDelayInNanoSec = 1000000000U / masterConfig->baudRate * 2U;
+#endif
 
     masterConfig->whichPcs           = kLPSPI_Pcs0;
     masterConfig->pcsActiveHighOrLow = kLPSPI_PcsActiveLow;
@@ -347,7 +351,12 @@ void LPSPI_MasterGetDefaultConfig(lpspi_master_config_t *masterConfig)
     masterConfig->pinCfg        = kLPSPI_SdiInSdoOut;
     masterConfig->dataOutConfig = kLpspiDataOutRetained;
 
+#if 1
     masterConfig->enableInputDelay = false;
+#else
+    /* ATT: this does not work without to enable input and output buffer! */
+    masterConfig->enableInputDelay = true;
+#endif
 }
 
 /*!
@@ -412,7 +421,8 @@ void LPSPI_SlaveGetDefaultConfig(lpspi_slave_config_t *slaveConfig)
     assert(slaveConfig != NULL);
 
     /* Initializes the configure structure to zero. */
-    (void)memset(slaveConfig, 0, sizeof(*slaveConfig));
+    ////(void)memset(slaveConfig, 0, sizeof(*slaveConfig));
+    (void)memset(slaveConfig, 0, sizeof(lpspi_slave_config_t));
 
     slaveConfig->bitsPerFrame = 8;                              /*!< Bits per frame, minimum 8, maximum 4096.*/
     slaveConfig->cpol         = kLPSPI_ClockPolarityActiveHigh; /*!< Clock polarity. */
@@ -420,7 +430,7 @@ void LPSPI_SlaveGetDefaultConfig(lpspi_slave_config_t *slaveConfig)
     slaveConfig->direction    = kLPSPI_MsbFirst;                /*!< MSB or LSB data shift direction. */
 
     slaveConfig->whichPcs           = kLPSPI_Pcs0;         		/*!< Desired Peripheral Chip Select (pcs) */
-    slaveConfig->pcsActiveHighOrLow = kLPSPI_PcsActiveLow; /*!< Desired PCS active high or low */
+    slaveConfig->pcsActiveHighOrLow = kLPSPI_PcsActiveLow; 		/*!< Desired PCS active high or low */
 
     slaveConfig->pinCfg        = kLPSPI_SdiInSdoOut;
     slaveConfig->dataOutConfig = kLpspiDataOutRetained;

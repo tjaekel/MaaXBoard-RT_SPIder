@@ -29,6 +29,9 @@
 #ifndef APP_TASK_STACK_SIZE
 #define APP_TASK_STACK_SIZE 4000L
 #endif
+#ifndef INT_TASK_STACK_SIZE
+#define INT_TASK_STACK_SIZE 1000L
+#endif
 
 int USBH_Init(void);
 
@@ -57,7 +60,7 @@ void APPTask(void *handle)
 {
     USB_DeviceApplicationInit();
 
-    SPI_setup(14000000);
+    SPI_setup(10000000);
     /* ATT: max. is right now 12 MHz!, but 12000000 sets 8 MHz! */
 
 #if USB_DEVICE_CONFIG_USE_TASK
@@ -80,6 +83,28 @@ void APPTask(void *handle)
     APPTaskLoop();
 }
 
+void INTTask(void *handle)
+{
+	uint32_t val;
+	while (1)
+	{
+		val = GPIO_INT_check();
+		if (val)
+		{
+			if (val & 0x1)
+				print_log(UART_OUT, "\r\n*I: INT1\r\n");
+			if (val & 0x2)
+				print_log(UART_OUT, "\r\n*I: INT2\r\n");
+			if (val & 0x4)
+				print_log(UART_OUT, "\r\n*I: INT3\r\n");
+			if (val & 0x80000000)
+				print_log(UART_OUT, "\r\n*I: USR BTN\r\n");
+			GPIO_INT_clear();
+		}
+		OSA_TimeDelay(100);
+	}
+}
+
 #if defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__)
 int main(void)
 #else
@@ -91,6 +116,7 @@ void main(void)
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
 
+#if 1
     CFG_Read();
     MEM_PoolInit();
     LED_Init();
@@ -98,7 +124,7 @@ void main(void)
     TEMP_Init();
 
     if (xTaskCreate(APPTask,                                       /* pointer to the task                      */
-    				"CMD task",                                     /* task name for kernel awareness debugging */
+    				"CMD task",                                    /* task name for kernel awareness debugging */
                     APP_TASK_STACK_SIZE / sizeof(portSTACK_TYPE),  /* task stack size                          */
                     &s_cdcVcom,                                    /* optional task startup argument           */
                     4,                                             /* initial priority                         */
@@ -113,6 +139,23 @@ void main(void)
 #endif
     }
 
+    if (xTaskCreate(INTTask,                                       	/* pointer to the task                      */
+    				"INT task",                                     /* task name for kernel awareness debugging */
+                    INT_TASK_STACK_SIZE / sizeof(portSTACK_TYPE), 	/* task stack size                          */
+                    NULL,                                    		/* optional task startup argument           */
+                    3,                                             	/* initial priority                         */
+                    NULL               								/* optional task handle to create           */
+                    ) != pdPASS)
+    {
+        debug_log("int task create failed!\r\n");
+#if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))
+        return 1;
+#else
+        return;
+#endif
+    }
+#endif
+
     /* initialization with thread definitions */
 #ifdef WITH_USB_MEMORY
     USBH_Init();
@@ -121,7 +164,7 @@ void main(void)
     HTTPD_Init();
 #endif
 
-    debug_log("starting RTOS...\r\n");
+    debug_log("\r\nstarting RTOS...\r\n");
     vTaskStartScheduler();
 
 #if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))

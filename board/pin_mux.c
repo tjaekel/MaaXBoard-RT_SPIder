@@ -40,6 +40,8 @@ pin_labels:
 
 #include "board.h"
 
+void BOARD_InitDualSPIPins(void);
+
 /* FUNCTION ************************************************************************************************************
  * 
  * Function Name : BOARD_InitBootPins
@@ -368,82 +370,6 @@ void BOARD_InitPins(void) {
                                                  Domain write protection: Both cores are allowed
                                                  Domain write protection lock: Neither of DWP bits is locked */
 
-  /* Add LPSPI4 for MaaXBoard-RT board: */
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_DISP_B2_12_LPSPI4_SCK,       /* GPIO_DISP_B2_12 is configured as LPSPI4_SCK */
-	  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-#ifdef SPI_NSS_HW
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_DISP_B2_15_LPSPI4_PCS0,      /* GPIO_DISP_B2_15 is configured as LPSPI4_PCS0 */
-	  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-#endif
-
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_DISP_B2_14_LPSPI4_SOUT,      /* GPIO_DISP_B2_14 is configured as LPSPI4_SOUT */
-	  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_DISP_B2_13_LPSPI4_SIN,      /* GPIO_DISP_B2_13 is configured as LPSPI4_SIN */
-	  0x02U);								  /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-  /* User GPIOs */
-  /* GPIO configuration of USER_GPIO on J1, pin22 */
-  gpio_pin_config_t USER_GPIO_config = {
-      .direction = kGPIO_DigitalOutput,
-      .outputLogic = 0U,
-      .interruptMode = kGPIO_NoIntmode
-  };
-  /* Initialize GPIO functionality on IOMUXC_GPIO_AD_31_GPIO9_IO30 */
-  GPIO_PinInit(GPIO9, 30U, &USER_GPIO_config);
-
-#if 1
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_31_GPIO9_IO30,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      0x00U);
-#else
-  /* does not work like GPIO - FlexIO is a shift register logic */
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_31_FLEXIO2_D31,      	  /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      0x00U);
-#endif
-
-#ifndef SPI_NSS_HW
-  //IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16 as SPI_CS0
-  GPIO_PinInit(GPIO11, 16U, &USER_GPIO_config);
-
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_DISP_B2_15_GPIO11_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      0x02U);
-#endif
-  /* add SPI_CS1 - as SW_NSS only possible: IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16 */
-  GPIO_PinInit(GPIO8, 16U, &USER_GPIO_config);
-
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
-      0x02U);
-
 #if 1
   /* enable SWO for ITM_Print */
   IOMUXC_SetPinMux(
@@ -461,85 +387,236 @@ void BOARD_InitPins(void) {
                                                  Domain write protection lock: Neither of DWP bits is locked */
 #endif
 
-  /* add and configure SPI2 on MaaxBoard-RT, as SPI Slave */
-#if DEBUG_CONSOLE_UART_INDEX == 6
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_24_LPSPI2_SCK,           /* GPIO_AD_24 is configured as LPSPI2_SCK */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-#if 0
-  /* we do not need SPI Slacve PCS0 signal - it works with AUTOPCS */
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 is configured as LPSPI2_PCS0 */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-#endif
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 is configured as LPSPI2_SOUT */
-      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
-  IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_AD_27_LPSPI2_SIN,           /* GPIO_AD_27 is configured as LPSPI2_SIN */
-      0U);
+  /* RES signals */
+  gpio_pin_config_t USER_GPIO_config = {
+      .direction = kGPIO_DigitalOutput,
+      .outputLogic = 1U,
+      .interruptMode = kGPIO_NoIntmode
+  };
 
-  IOMUXC_SetPinConfig(
-	  IOMUXC_GPIO_AD_24_LPSPI2_SCK,           /* GPIO_AD_24 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-#if 0
-  IOMUXC_SetPinConfig(
-	  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-#endif
-  IOMUXC_SetPinConfig(
-	  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-  IOMUXC_SetPinConfig(
-	  IOMUXC_GPIO_AD_27_LPSPI2_SIN,           /* GPIO_AD_27 PAD functional properties : */
-      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
-                                                 Drive Strength Field: high drive strength
-                                                 Pull / Keep Select Field: Pull Disable, Highz
-                                                 Pull Up / Down Config. Field: Weak pull down
-                                                 Open Drain Field: Disabled
-                                                 Domain write protection: Both cores are allowed
-                                                 Domain write protection lock: Neither of DWP bits is locked */
-#endif
-
-  /* configure GPIOs */
 #if 1
-  IOMUXC_GPR->GPR40 = 0x00008000;				/* select FastGPIO, CM7_GPIO2, bit 15 */
+  /* INT signals */
+  /* as fast GPIO for INT with pull-up */
+  IOMUXC_GPR->GPR42 = 0x0100;					/* select FastGPIO, CM7_GPIO3, bit 8 */
 
-  GPIO_PinInit(CM7_GPIO2, 15U, &USER_GPIO_config);
+  USER_GPIO_config.direction = kGPIO_DigitalInput;
+  USER_GPIO_config.interruptMode = kGPIO_IntFallingEdge;
+
+  GPIO_PinInit(CM7_GPIO3, 8U, &USER_GPIO_config);
 
   IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_EMC_B2_05_GPIO_MUX2_IO15,     /* configured as GPIO */
-      0x0U);
+		  IOMUXC_GPIO_AD_09_GPIO_MUX3_IO08,     /* configured as GPIO */
+      0x1U);
 
   IOMUXC_SetPinConfig(
-	  IOMUXC_GPIO_EMC_B2_05_GPIO_MUX2_IO15,
-	  0x03U);									/* fast slew rate, high drive strength */
-#else
-  /* as normal GPIO */
-  GPIO_PinInit(GPIO8, 15U, &USER_GPIO_config);
+		  IOMUXC_GPIO_AD_09_GPIO_MUX3_IO08,
+	  0x08U);									/* pull-up, normal drive strength */
+
+  IOMUXC_GPR->GPR42 = 0x0020;					/* select FastGPIO, CM7_GPIO3, bit 5 */
+
+  USER_GPIO_config.direction = kGPIO_DigitalInput;
+  USER_GPIO_config.interruptMode = kGPIO_IntFallingEdge;
+
+  GPIO_PinInit(CM7_GPIO3, 5U, &USER_GPIO_config);
 
   IOMUXC_SetPinMux(
-	  IOMUXC_GPIO_EMC_B2_05_GPIO8_IO15,     	/* configured as GPIO */
+		  IOMUXC_GPIO_AD_06_GPIO_MUX3_IO05,     /* configured as GPIO */
+      0x1U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_06_GPIO_MUX3_IO05,
+	  0x08U);									/* pull-up, normal drive strength */
+
+  IOMUXC_GPR->GPR41 = 0x0040;					/* select FastGPIO, CM7_GPIO2, bit 22 */
+
+  USER_GPIO_config.direction = kGPIO_DigitalInput;
+  USER_GPIO_config.interruptMode = kGPIO_IntFallingEdge;
+
+  GPIO_PinInit(CM7_GPIO2, 22U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_EMC_B2_12_GPIO_MUX2_IO22,     /* configured as GPIO */
+      0x1U);
+
+  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_EMC_B2_12_GPIO_MUX2_IO22,
+	  0x06U);									/* pull-up, normal drive strength - ATT: different value here */
+#endif
+
+#if 1
+  /* configure RES output signals */
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_AD_01_GPIO_MUX3_IO00,
+      0x00U);
+  IOMUXC_SetPinMux(
+  	  IOMUXC_GPIO_AD_07_GPIO_MUX3_IO06,
+      0x00U);
+
+  CM7_GPIO3->GDIR |= 0x0041;					/* bit 0, 6 */
+  CM7_GPIO3->DR |= 0x0041;
+  IOMUXC_GPR->GPR42 |= 0x0041;					/* bit 0, 6 */
+#endif
+
+  /* DualSPI pins as default */
+  BOARD_InitDualSPIPins();
+}
+
+void BOARD_InitDualSPIPins(void) {
+	  /* add and configure SPI2 on MaaxBoard-RT, as SPI Master */
+	  /* Add LPSPI4 for MaaXBoard-RT board: */
+  gpio_pin_config_t USER_GPIO_config = {
+		      .direction = kGPIO_DigitalOutput,
+		      .outputLogic = 1U,
+		      .interruptMode = kGPIO_NoIntmode
+  };
+
+#ifndef SPI_NSS_HW
+  //IOMUXC_GPIO_AD_25 GPIO9_IO24 as SPI_CS0
+  GPIO_PinInit(GPIO9, 24U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_AD_25_GPIO9_IO24,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
       0x02U);
 #endif
+  /* add SPI_CS1 - as SW_NSS only possible: IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16 */
+  GPIO_PinInit(GPIO8, 16U, &USER_GPIO_config);
+
+  IOMUXC_SetPinMux(
+	  IOMUXC_GPIO_EMC_B2_06_GPIO8_IO16,     /* IOMUXC_GPIO_AD_31_GPIO9_IO30 is configured as GPIO */
+      0x02U);
+
+	  IOMUXC_SetPinMux(
+			  IOMUXC_GPIO_DISP_B2_12_LPSPI4_SCK,
+			  1U);								   /* force as input */
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_DISP_B2_12_LPSPI4_SCK,       /* GPIO_DISP_B2_12 is configured as LPSPI4_SCK */
+		  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#ifdef XXXX_SPI_NSS_HW
+	  /* FIX, as option for LPSPI4_PSCO0 */
+	  IOMUXC_SetPinMux(
+			  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,
+			  0U);
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,      	   /* GPIO_AD_25 is configured as LPSPI2_PCS0 */
+		  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#endif
+
+#if 0
+	  /* LPSPI4 is Slave, as Rx only, we do not need SOUT = MOSI */
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_DISP_B2_14_LPSPI4_SOUT,      /* GPIO_DISP_B2_14 is configured as LPSPI4_SOUT */
+		  0x02U);                                  /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#endif
+
+	  IOMUXC_SetPinMux(
+			  IOMUXC_GPIO_DISP_B2_13_LPSPI4_SIN,
+	  		  1U);								  /* force as input */
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_DISP_B2_13_LPSPI4_SIN,      /* GPIO_DISP_B2_13 is configured as LPSPI4_SIN */
+		  0x02U);								  /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+
+#if DEBUG_CONSOLE_UART_INDEX == 6
+	  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_24_LPSPI2_SCK,           /* GPIO_AD_24 is configured as LPSPI2_SCK */
+#ifndef DUAL_SPI
+	      1U);                                    /* Software Input On Field: Input Path is determined by functionality */
+#else
+	  	  0U);
+#endif
+	  /* ATT: for delayed SCLK on Master Rx (SAMPLE) - we have to force input buffer enabled via this 1U ! */
+#ifdef SPI_NSS_HW
+	  /* we do not need SPI Slave PCS0 signal - it works with AUTOPCS */
+	  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 is configured as LPSPI2_PCS0 */
+	      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+#endif
+	  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 is configured as LPSPI2_SOUT */
+	      0U);                                    /* Software Input On Field: Input Path is determined by functionality */
+#ifndef DUAL_SPI
+	  /* LPSPI2 is Master, Tx only, we do not need SIN = MISO */
+	  IOMUXC_SetPinMux(
+		  IOMUXC_GPIO_AD_27_LPSPI2_SIN,           /* GPIO_AD_27 is configured as LPSPI2_SIN */
+	      0U);
+#endif
+
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_24_LPSPI2_SCK,           /* GPIO_AD_24 PAD functional properties : */
+	      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#ifdef SPI_NSS_HW
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_25_LPSPI2_PCS0,          /* GPIO_AD_25 PAD functional properties : */
+	      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#endif
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_26_LPSPI2_SOUT,          /* GPIO_AD_26 PAD functional properties : */
+	      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#ifndef DUAL_SPI
+	  IOMUXC_SetPinConfig(
+		  IOMUXC_GPIO_AD_27_LPSPI2_SIN,           /* GPIO_AD_27 PAD functional properties : */
+	      0x02U);                                 /* Slew Rate Field: Slow Slew Rate
+	                                                 Drive Strength Field: high drive strength
+	                                                 Pull / Keep Select Field: Pull Disable, Highz
+	                                                 Pull Up / Down Config. Field: Weak pull down
+	                                                 Open Drain Field: Disabled
+	                                                 Domain write protection: Both cores are allowed
+	                                                 Domain write protection lock: Neither of DWP bits is locked */
+#endif
+#endif
+
+	  /* set nCS high */
+	  ////SPI_SW_CS(0, 1);
+	  ////SPI_SW_CS(1, 1);
+}
+
+void BOARD_InitSWQSPIPins(void) {
+  gpio_pin_config_t USER_GPIO_config = {
+	      .direction = kGPIO_DigitalOutput,
+	      .outputLogic = 1U,
+	      .interruptMode = kGPIO_NoIntmode
+  };
 
   /* configure LPSPI2 as FastGPIO pins - for SW QSPI master */
   IOMUXC_GPR->GPR43 = 0x00000F84;				/* select FastGPIO, CM7_GPIO3, bits 23, 24, 25, 26, 27, 18 */
@@ -602,7 +679,6 @@ void BOARD_InitPins(void) {
 		  IOMUXC_GPIO_AD_19_GPIO_MUX3_IO18,
 	  0x03U);
 }
-
 
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************

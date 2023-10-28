@@ -18,6 +18,7 @@
 #define	QSPI_DIRmaskOut		0x0F840000	//set output direction
 #define QSPI_DIRmaskIn		0x01000000	//all input, except PCS
 
+void BOARD_InitSWQSPIPins(void);	//configure LPSPI2 as QGPIOs for SW_QSPI
 void QSPI_Test(void);
 
 #endif /* QSPI_SW_H_ */

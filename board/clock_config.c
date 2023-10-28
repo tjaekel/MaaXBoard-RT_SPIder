@@ -694,7 +694,7 @@ void BOARD_BootClockRUN(void)
     ////rootCfg.div = 1;
     ////rootCfg.mux = kCLOCK_LPSPI4_ClockRoot_MuxSysPll2Out;
     ////rootCfg.div = 22;
-    /* above" no difference: max. is 12 MHz for SPI */
+    /* above: no difference: max. is 12 MHz for SPI */
     rootCfg.mux = kCLOCK_LPSPI4_ClockRoot_MuxSysPll2Out;
     rootCfg.div = SPI_DIVIDER;
     CLOCK_SetRootClock(kCLOCK_Root_Lpspi4, &rootCfg);

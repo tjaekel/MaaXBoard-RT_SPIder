@@ -78,7 +78,7 @@
 #define configTOTAL_HEAP_SIZE ((size_t)(64 * 1024))
 #endif
 
-#define configAPPLICATION_ALLOCATED_HEAP        0
+#define configAPPLICATION_ALLOCATED_HEAP        1		//0
 
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK                     0
